@@ -177,6 +177,10 @@ type Content =
     }
   | {
       file: PathLike;
+    }
+  | {
+      html: string;
+      text?: string; // The alternative text representation of the content.
     };
 ```
 
@@ -193,7 +197,7 @@ type Content =
       file?: string;
     }
   | {
-      html?: string;
+      html?: string; 
     };
 ```
 
