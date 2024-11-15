@@ -178,6 +178,9 @@ type Content =
   | {
       file: PathLike;
     };
+  | {
+      html?: string;
+    };
 ```
 
 ### Clipboard.ReadContent
