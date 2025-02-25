@@ -13,6 +13,7 @@ import {
   Toast,
 } from "@raycast/api";
 import { useCachedPromise } from "@raycast/utils";
+import { useMemo } from "react";
 
 import { getGitHubClient } from "./api/githubClient";
 import {
@@ -26,17 +27,68 @@ import {
 import { withGitHubClient } from "./helpers/withGithubClient";
 import { useViewer } from "./hooks/useViewer";
 
-const preferences = getPreferenceValues<Preferences.UnreadNotifications>();
+// Define preferences interface
+interface UnreadNotificationsPreferences {
+  alwaysShow: boolean;
+  showUnreadCount: boolean;
+  notificationTypeFilter: boolean;
+  notificationType: string;
+  repositoryFilterEnabled: boolean;
+  repositoryFilterMode: "include" | "exclude";
+  repositoryList: string;
+}
+
+const preferences = getPreferenceValues<UnreadNotificationsPreferences>();
 
 function UnreadNotifications() {
   const { octokit } = getGitHubClient();
 
   const viewer = useViewer();
+  
+  // Parse repository list
+  const repositoryListArray = useMemo(() => {
+    if (!preferences.repositoryList) return [];
+    return preferences.repositoryList
+      .split(",")
+      .map(repo => repo.trim())
+      .filter(repo => repo.length > 0);
+  }, [preferences.repositoryList]);
 
   const { data, isLoading, mutate } = useCachedPromise(async () => {
+    // Get notifications
     const response = await octokit.activity.listNotificationsForAuthenticatedUser();
+    let notifications = response.data;
+    
+    // Apply filters before processing icons
+    // Filter by notification type
+    if (preferences.notificationTypeFilter && preferences.notificationType !== "all") {
+      notifications = notifications.filter(
+        (notification) => notification.subject.type === preferences.notificationType
+      );
+    }
+    
+    // Filter by repository list
+    if (preferences.repositoryFilterEnabled && repositoryListArray.length > 0) {
+      if (preferences.repositoryFilterMode === "include") {
+        // Include only repositories in the list (case insensitive)
+        notifications = notifications.filter(
+          (notification) => repositoryListArray.some(repo => 
+            repo.toLowerCase() === notification.repository.full_name.toLowerCase()
+          )
+        );
+      } else {
+        // Exclude repositories in the list (case insensitive)
+        notifications = notifications.filter(
+          (notification) => !repositoryListArray.some(repo => 
+            repo.toLowerCase() === notification.repository.full_name.toLowerCase()
+          )
+        );
+      }
+    }
+    
+    // Process icons for the filtered notifications
     return Promise.all(
-      response.data.map(async (notification: Notification) => {
+      notifications.map(async (notification: Notification) => {
         let icon: { value: Image; tooltip: string };
         try {
           icon = await getNotificationIcon(notification);

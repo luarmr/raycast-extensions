@@ -1,5 +1,11 @@
 # GitHub Changelog
 
+## [Add repository filtering] - 2025-02-24
+
+- Add support for filtering notifications, unread notifications and pull requests by repository list
+- Add the ability to include or exclude specific repositories from results
+- Repository filtering can be enabled in the preferences for Notifications, Unread Notifications, and My Pull Requests Menu Bar commands
+
 ## [Fix base clone path] - 2025-01-19
 
 - Move `baseClonePath` to extension root level

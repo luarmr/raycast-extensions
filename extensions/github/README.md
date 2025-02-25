@@ -33,6 +33,19 @@ For simplicity, some commands are disabled by default. To use them, you can enab
 - `My Discussions`
 - `Search Discussions`
 
+## Repository Filtering on toolbar commands
+
+You can filter the following commands by repository:
+- `Notifications`
+- `Unread Notifications` (menu bar)
+- `My Pull Requests Menu Bar`
+
+This allows you to include only specific repositories or exclude repositories from your results. To use this feature:
+
+1. Enable "Filter by Repository List" in the command preferences
+2. Select the filter mode ("Include Only Listed Repositories" or "Exclude Listed Repositories")
+3. Add your repositories in the format: `owner/repo1, owner/repo2, owner/repo3`
+
 ## FAQ
 
 ### Can I use my GitHub pull request or issue template?

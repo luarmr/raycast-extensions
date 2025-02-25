@@ -33,7 +33,8 @@
     "vlasischar",
     "javalangruntimeexception",
     "shyaka",
-    "sushichan044"
+    "sushichan044",
+    "luarmr"
   ],
   "categories": [
     "Developer Tools",
@@ -224,7 +225,63 @@
       "name": "notifications",
       "title": "Notifications",
       "description": "List inbox notifications from all repositories or a selected repository.",
-      "mode": "view"
+      "mode": "view",
+      "preferences": [
+        {
+          "name": "notificationTypeFilter",
+          "type": "checkbox",
+          "required": false,
+          "default": false,
+          "label": "Filter by Type",
+          "title": "Notification Filtering",
+          "description": "Enable filtering notifications by type"
+        },
+        {
+          "name": "notificationType",
+          "type": "dropdown",
+          "required": false,
+          "title": "Notification Type",
+          "description": "Type of notifications to show",
+          "data": [
+            { "title": "All Types", "value": "all" },
+            { "title": "Pull Request", "value": "PullRequest" },
+            { "title": "Issue", "value": "Issue" },
+            { "title": "Commit", "value": "Commit" },
+            { "title": "Release", "value": "Release" },
+            { "title": "Discussion", "value": "Discussion" },
+            { "title": "Repository Invitation", "value": "RepositoryInvitation" }
+          ]
+        },
+        {
+          "name": "repositoryFilterEnabled",
+          "type": "checkbox",
+          "required": false,
+          "default": false,
+          "label": "Filter by Repository List",
+          "title": "Repository Filtering",
+          "description": "Enable filtering notifications by repository list"
+        },
+        {
+          "name": "repositoryFilterMode",
+          "type": "dropdown",
+          "required": false,
+          "default": "include",
+          "title": "Repository Filter Mode",
+          "description": "How to filter repositories",
+          "data": [
+            { "title": "Include Only Listed Repositories", "value": "include" },
+            { "title": "Exclude Listed Repositories", "value": "exclude" }
+          ]
+        },
+        {
+          "name": "repositoryList",
+          "type": "textfield",
+          "required": false,
+          "title": "Repository List",
+          "description": "Comma-separated list of repositories to include/exclude (e.g., 'owner/repo1, owner/repo2')",
+          "placeholder": "owner/repo1, owner/repo2, owner/repo3"
+        }
+      ]
     },
     {
       "name": "unread-notifications",
@@ -248,6 +305,60 @@
           "description": "Show the unread count in the menu bar.",
           "default": true,
           "required": false
+        },
+        {
+          "name": "notificationTypeFilter",
+          "type": "checkbox",
+          "required": false,
+          "default": false,
+          "label": "Filter by Type",
+          "title": "Notification Filtering",
+          "description": "Enable filtering notifications by type"
+        },
+        {
+          "name": "notificationType",
+          "type": "dropdown",
+          "required": false,
+          "title": "Notification Type",
+          "description": "Type of notifications to show",
+          "data": [
+            { "title": "All Types", "value": "all" },
+            { "title": "Pull Request", "value": "PullRequest" },
+            { "title": "Issue", "value": "Issue" },
+            { "title": "Commit", "value": "Commit" },
+            { "title": "Release", "value": "Release" },
+            { "title": "Discussion", "value": "Discussion" },
+            { "title": "Repository Invitation", "value": "RepositoryInvitation" }
+          ]
+        },
+        {
+          "name": "repositoryFilterEnabled",
+          "type": "checkbox",
+          "required": false,
+          "default": false,
+          "label": "Filter by Repository List",
+          "title": "Repository Filtering",
+          "description": "Enable filtering notifications by repository list"
+        },
+        {
+          "name": "repositoryFilterMode",
+          "type": "dropdown",
+          "required": false,
+          "default": "include",
+          "title": "Repository Filter Mode",
+          "description": "How to filter repositories",
+          "data": [
+            { "title": "Include Only Listed Repositories", "value": "include" },
+            { "title": "Exclude Listed Repositories", "value": "exclude" }
+          ]
+        },
+        {
+          "name": "repositoryList",
+          "type": "textfield",
+          "required": false,
+          "title": "Repository List",
+          "description": "Comma-separated list of repositories to include/exclude (e.g., 'owner/repo1, owner/repo2')",
+          "placeholder": "owner/repo1, owner/repo2, owner/repo3"
         }
       ]
     },
@@ -413,6 +524,35 @@
           "required": false,
           "title": "Max Pull Requests per category",
           "placeholder": "5"
+        },
+        {
+          "name": "repositoryFilterEnabled",
+          "type": "checkbox",
+          "required": false,
+          "default": false,
+          "label": "Filter by Repository List",
+          "title": "Repository Filtering",
+          "description": "Enable filtering pull requests by repository list"
+        },
+        {
+          "name": "repositoryFilterMode",
+          "type": "dropdown",
+          "required": false,
+          "default": "include",
+          "title": "Repository Filter Mode",
+          "description": "How to filter repositories",
+          "data": [
+            { "title": "Include Only Listed Repositories", "value": "include" },
+            { "title": "Exclude Listed Repositories", "value": "exclude" }
+          ]
+        },
+        {
+          "name": "repositoryList",
+          "type": "textfield",
+          "required": false,
+          "title": "Repository List",
+          "description": "Comma-separated list of repositories to include/exclude (e.g., 'owner/repo1, owner/repo2')",
+          "placeholder": "owner/repo1, owner/repo2, owner/repo3"
         }
       ]
     }
