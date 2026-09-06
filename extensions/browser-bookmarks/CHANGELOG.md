@@ -1,11 +1,9 @@
 # Browser Bookmarks Changelog
 
-## [Detect more Chromium browsers on Windows] - 2026-09-06
+## [Updates] - 2026-09-06
 
+- Memoise the Chromium bookmark and folder lists so typing in the search bar no longer rewalks the bookmark tree for every browser
 - Find Brave Nightly, Vivaldi, Helium and Dia on Windows instead of only looking in the macOS application support folder
-
-## [Find Firefox and Zen profiles on Windows] - 2026-09-06
-
 - Look for Firefox and Zen profiles in the Windows roaming app data folder instead of only the macOS application support folder
 
 ## [Chrome Account Bookmarks] - 2026-05-20
