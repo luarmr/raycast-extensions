@@ -15,7 +15,7 @@ import {
 import { useEffect, useRef, useState } from "react";
 import { buildLevel, levelBriefing, type Rank } from "./maze/level";
 import { renderMazeSvg } from "./maze/render";
-import { iceExplore, SHIFT_EVERY, shiftWalls, slidePath, stepGuard } from "./maze/rules";
+import { cutPathAtGhost, iceExplore, SHIFT_EVERY, shiftWalls, slidePath, stepGuard } from "./maze/rules";
 import {
   ptKey,
   samePoint,
@@ -338,13 +338,16 @@ export default function MazeCommand({ custom }: { custom?: CustomSetup } = {}) {
     let finishedAt: number | null = null;
     let notice: Toast.Options | null = null;
 
-    if (slide.warped) {
+    // Sliding into a ghost stops you on its cell, so nothing past it is traversed or collected.
+    const path = cutPathAtGhost(slide.cells, guard);
+    const warped = slide.warped && path.length === slide.cells.length;
+    if (warped) {
       notice = { style: Toast.Style.Success, title: "Whoosh! 🌀", message: "The portal warped you across the maze" };
     }
 
     let gemsCollected = 0;
     const pickups: Pickup[] = [];
-    for (const cell of slide.cells) {
+    for (const cell of path) {
       if (key && samePoint(cell, key)) {
         pickups.push({ kind: "key", at: { ...cell } });
         hasKey = true;
@@ -384,7 +387,7 @@ export default function MazeCommand({ custom }: { custom?: CustomSetup } = {}) {
       };
     }
 
-    let player = slide.cells[slide.cells.length - 1];
+    let player = path[path.length - 1];
     if (samePoint(player, game.exit)) {
       finishedAt = Date.now();
       scoreDelta += LEVEL_BONUS * game.level;
@@ -432,14 +435,14 @@ export default function MazeCommand({ custom }: { custom?: CustomSetup } = {}) {
       };
     }
 
-    if (samePoint(player, slide.cells[slide.cells.length - 1])) {
+    if (samePoint(player, path[path.length - 1])) {
       const startedAt = Date.now();
       const heldKey = startedAt - lastMoveAt.current < HELD_KEY_GAP_MS;
       lastMoveAt.current = startedAt;
       const stepMs = heldKey ? FAST_STEP_MS : STEP_MS;
-      const steps = slide.cells.length;
+      const steps = path.length;
       setAnim({
-        playerPath: [game.player, ...slide.cells],
+        playerPath: [game.player, ...path],
         guardFrom: game.guard,
         guardTo: guard,
         startedAt,

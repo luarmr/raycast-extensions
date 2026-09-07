@@ -40,6 +40,13 @@ describe("buildLevel", () => {
     }
   });
 
+  it("keeps ice on every campaign ice level", () => {
+    // Levels 9, 10 and the combos at 14/16/17/19 (+7n) request ice.
+    for (const level of [9, 10, 14, 16, 17, 19, 21, 23, 24, 26]) {
+      for (let i = 0; i < 10; i++) assert.equal(buildLevel(level).ice, true, `level ${level}`);
+    }
+  });
+
   it("introduces modifiers on the documented campaign levels", () => {
     assert.equal(buildLevel(1).needsKey, false);
     assert.equal(buildLevel(2).needsKey, true);
@@ -72,6 +79,7 @@ describe("buildLevel", () => {
         assert.notEqual(state.guardHome, null);
         assert.notEqual(state.portals, null);
         assert.notEqual(state.fogRadius, null);
+        assert.equal(state.ice, true, "requested ice must never be silently dropped");
         assert.equal(state.shifting, true);
         assert.ok(state.trailLife !== null && state.trailLife > 0);
       }

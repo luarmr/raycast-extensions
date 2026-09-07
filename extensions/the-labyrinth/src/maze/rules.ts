@@ -73,6 +73,17 @@ export function slidePath(
   return { cells, blockedByDoor, warped };
 }
 
+/**
+ * A ghost standing anywhere along a traversal catches the player there: the
+ * path is cut at the ghost's cell (inclusive). Matters for ice slides and
+ * portal hops, where `cells` holds more than one step.
+ */
+export function cutPathAtGhost(cells: Point[], ghost: Point | null): Point[] {
+  if (!ghost) return cells;
+  const hit = cells.findIndex((c) => samePoint(c, ghost));
+  return hit === -1 ? cells : cells.slice(0, hit + 1);
+}
+
 export function iceExplore(
   maze: Maze,
   start: Point,

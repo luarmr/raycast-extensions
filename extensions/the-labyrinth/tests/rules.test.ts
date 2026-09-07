@@ -1,7 +1,15 @@
 import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { buildLevel } from "../src/maze/level";
-import { bfsDistances, iceExplore, iceRouteOk, shiftWalls, slidePath, stepGuard } from "../src/maze/rules";
+import {
+  bfsDistances,
+  cutPathAtGhost,
+  iceExplore,
+  iceRouteOk,
+  shiftWalls,
+  slidePath,
+  stepGuard,
+} from "../src/maze/rules";
 import { DIRECTIONS, samePoint, type Direction } from "../src/maze/types";
 import { closeWall, mazeIsWellFormed, openMaze, p, placedItems, reachable } from "./helpers";
 
@@ -110,6 +118,29 @@ describe("iceExplore / iceRouteOk", () => {
   });
 });
 
+describe("cutPathAtGhost", () => {
+  const path = [p(1, 0), p(2, 0), p(3, 0), p(4, 0)];
+
+  it("leaves the path alone without a ghost or when the ghost is off the path", () => {
+    assert.deepEqual(cutPathAtGhost(path, null), path);
+    assert.deepEqual(cutPathAtGhost(path, p(0, 5)), path);
+  });
+
+  it("stops the traversal on the ghost's cell, dropping everything past it", () => {
+    assert.deepEqual(cutPathAtGhost(path, p(2, 0)), [p(1, 0), p(2, 0)]);
+    assert.deepEqual(cutPathAtGhost(path, p(4, 0)), path);
+    assert.deepEqual(cutPathAtGhost(path, p(1, 0)), [p(1, 0)]);
+  });
+
+  it("catches the player mid-slide on ice", () => {
+    const maze = openMaze(6, 1);
+    const slide = slidePath(maze, p(0, 0), "right", true, null, p(5, 0), false);
+    assert.equal(slide.cells.length, 5, "full slide reaches the exit");
+    const cut = cutPathAtGhost(slide.cells, p(3, 0));
+    assert.deepEqual(cut.at(-1), p(3, 0), "player lands on the ghost, not the exit");
+  });
+});
+
 describe("stepGuard", () => {
   it("stays put when boxed in", () => {
     const maze = openMaze(3, 1);
@@ -164,7 +195,7 @@ describe("shiftWalls", () => {
     let checked = 0;
     for (let i = 0; i < 300 && checked < 100; i++) {
       const g = buildLevel(6, custom);
-      if (!g.ice) continue;
+      assert.equal(g.ice, true, "requested ice must be kept");
       let player = g.start;
       for (let m = 0; m < 6; m++) {
         const slide = slidePath(g.maze, player, dirs[Math.floor(Math.random() * 4)], true, null, g.exit, false);
