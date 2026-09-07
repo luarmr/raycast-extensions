@@ -45,6 +45,8 @@ export type LevelState = {
   lightBurst: number;
   lightOrigin: Point | null;
   ice: boolean;
+  /** True when ice was requested but no solvable icy layout was found, so the floor is not icy. */
+  iceFallback: boolean;
   shifting: boolean;
   /** Cell key → move index it was last stepped on. */
   trail: Map<string, number>;

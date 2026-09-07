@@ -26,6 +26,7 @@ function assertLevelInvariants(state: LevelState, label: string) {
   assert.equal(state.candle !== null, state.fogRadius !== null, `${label}: fog without candle`);
 
   if (state.ice) {
+    assert.equal(state.iceFallback, false, `${label}: an icy level cannot also report an ice fallback`);
     assert.ok(
       iceRouteOk(state.maze, state.start, state.exit, state.key, state.portals),
       `${label}: ice level not solvable/escapable from start`,
@@ -40,11 +41,19 @@ describe("buildLevel", () => {
     }
   });
 
-  it("keeps ice on every campaign ice level", () => {
+  it("keeps ice on every campaign ice level and never reports a fallback for it", () => {
     // Levels 9, 10 and the combos at 14/16/17/19 (+7n) request ice.
     for (const level of [9, 10, 14, 16, 17, 19, 21, 23, 24, 26]) {
-      for (let i = 0; i < 10; i++) assert.equal(buildLevel(level).ice, true, `level ${level}`);
+      for (let i = 0; i < 10; i++) {
+        const state = buildLevel(level);
+        assert.equal(state.ice, true, `level ${level}`);
+        assert.equal(state.iceFallback, false, `level ${level}`);
+      }
     }
+  });
+
+  it("does not report an ice fallback on levels that never asked for ice", () => {
+    for (const level of [1, 2, 5, 8, 11, 13, 20]) assert.equal(buildLevel(level).iceFallback, false);
   });
 
   it("introduces modifiers on the documented campaign levels", () => {

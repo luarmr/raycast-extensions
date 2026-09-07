@@ -60,6 +60,23 @@ function toast(options: Toast.Options): void {
   fireAndForget(showToast(options), "showToast");
 }
 
+/** Tell the player when the generator could not honour a requested hazard. */
+function announceFallbacks(level: LevelState): void {
+  if (level.iceFallback) {
+    toast({
+      style: Toast.Style.Failure,
+      title: "No icy layout could be built 🧊",
+      message: `Level ${level.level} is playing without ice this time`,
+    });
+  }
+}
+
+function buildAndAnnounce(level: number, custom?: CustomSetup): LevelState {
+  const built = buildLevel(level, custom);
+  announceFallbacks(built);
+  return built;
+}
+
 /** Coerce a persisted number back into a safe integer within [min, max]. */
 function savedInt(value: unknown, fallback: number, min: number, max = Number.MAX_SAFE_INTEGER): number {
   const n = Math.floor(Number(value));
@@ -184,16 +201,19 @@ export default function MazeCommand({ custom }: { custom?: CustomSetup } = {}) {
           setBest({ level: savedInt(bestLevel, 0, 0), score: savedInt(bestScore, 0, 0) });
         }
         if (sidebar === "hidden") setShowSidebar(false);
-        if (isCustom) return;
         const savedLevel = savedInt(runLevel, 1, 1);
         const savedScore = savedInt(runScore, 0, 0);
-        if (savedLevel > 1 || savedScore > 0) {
-          setGame(buildLevel(savedLevel));
+        const resuming = !isCustom && (savedLevel > 1 || savedScore > 0);
+        if (resuming) {
+          setGame(buildAndAnnounce(savedLevel));
           setScore(savedScore);
           levelStartScore.current = savedScore;
           setNow(Date.now());
           setIntroing(true);
           toast({ style: Toast.Style.Success, title: `Welcome back! Resuming at Level ${savedLevel}` });
+        } else {
+          // The initial level was built in the useState initializer, which must stay side-effect free.
+          announceFallbacks(game);
         }
       } catch (error) {
         // Storage is best-effort: start a fresh run rather than failing to render.
@@ -492,7 +512,7 @@ export default function MazeCommand({ custom }: { custom?: CustomSetup } = {}) {
     lastMoveAt.current = 0;
     setCatchAnim(null);
     setAnim(null);
-    setGame(buildLevel(level, custom));
+    setGame(buildAndAnnounce(level, custom));
     setIntroing(true);
     setIntroStartedAt(Date.now());
     setScore(startingScore);

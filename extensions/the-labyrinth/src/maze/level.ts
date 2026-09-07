@@ -211,7 +211,9 @@ export function normalizeLevel(level: number): number {
  * Generation retries until every requested feature fits. Ice levels usually
  * succeed within a handful of attempts (0 misses in 4,700 sampled builds), so
  * this cap is only a termination guard: past it the optional constraints (full
- * gem count, ice solvability) are relaxed so the game can never hang.
+ * gem count, ice solvability) are relaxed so the game can never hang. When ice
+ * has to be dropped the result says so via `iceFallback`, and the UI tells the
+ * player rather than silently changing the level.
  */
 const MAX_STRICT_ATTEMPTS = 600;
 
@@ -299,6 +301,7 @@ export function buildLevel(rawLevel: number, custom?: CustomSetup): LevelState {
       lightBurst: 0,
       lightOrigin: null,
       ice: cfg.ice && iceOk,
+      iceFallback: cfg.ice && !iceOk,
       shifting: cfg.shifting,
       trail: new Map([[ptKey(start), 0]]),
       trailLife: cfg.trailLife,
