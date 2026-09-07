@@ -12,6 +12,17 @@ export const HideDetailsAction = ({ hideDetails }: { hideDetails: () => void }) 
   return <Action title="Hide Details" onAction={hideDetails} icon={Icon.EyeDisabled} />;
 };
 
+export const ShowMeterAction = ({ showMeter }: { showMeter: () => void }) => {
+  return (
+    <Action
+      title="Show Speed Meter"
+      onAction={showMeter}
+      icon={Icon.Gauge}
+      shortcut={{ modifiers: ["cmd"], key: "l" }}
+    />
+  );
+};
+
 export function ClearCacheAction(props: { isLoading: boolean }) {
   if (props.isLoading) {
     return null;
@@ -45,7 +56,7 @@ export function ClearCacheAction(props: { isLoading: boolean }) {
 
   return (
     <Action
-      title="Clear CLI Cache"
+      title="Clear Cli Cache"
       icon={Icon.XMarkCircle}
       shortcut={Keyboard.Shortcut.Common.Remove}
       style={Action.Style.Destructive}

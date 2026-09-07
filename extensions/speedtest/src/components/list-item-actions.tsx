@@ -8,6 +8,7 @@ type ListItemActionsProps = {
   sectionClipboard: ClipboardData;
   summary: JSX.Element;
   restart: JSX.Element;
+  meter: JSX.Element;
   isDetailedViewEnabled: boolean;
   showViewAction: JSX.Element;
   hideViewAction: JSX.Element;
@@ -19,6 +20,7 @@ export const ListItemActions = ({
   sectionClipboard,
   summary,
   restart,
+  meter,
   isDetailedViewEnabled,
   showViewAction,
   hideViewAction,
@@ -26,6 +28,7 @@ export const ListItemActions = ({
   <ActionPanel>
     <ActionPanel.Section>
       {isDetailedViewEnabled ? hideViewAction : showViewAction}
+      {meter}
       {url && <Action.OpenInBrowser title="Open Results in Browser" url={url} />}
       {restart}
     </ActionPanel.Section>

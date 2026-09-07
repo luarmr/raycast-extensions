@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
 import { ensureCLI } from "./cli";
-import { SpeedtestResultDefaultValue, runSpeedTest } from "./speedtest";
-import { ResultProgress, SpeedtestResult } from "./speedtest.types";
+import { SpeedtestHandle, SpeedtestResultDefaultValue, runSpeedTest } from "./speedtest";
+import { ResultProgress, SpeedSamples, SpeedtestResult } from "./speedtest.types";
+
+const emptySamples = (): SpeedSamples => ({ download: [], upload: [] });
 
 export function useSpeedtest(): {
   result: SpeedtestResult;
   error?: string;
   isLoading: boolean;
   resultProgress: ResultProgress;
+  samples: SpeedSamples;
   revalidate: () => void;
 } {
   const [result, setResult] = useState<SpeedtestResult>({ ...SpeedtestResultDefaultValue });
@@ -19,41 +22,40 @@ export function useSpeedtest(): {
     upload: undefined,
     ping: undefined,
   });
+  const [samples, setSamples] = useState<SpeedSamples>(emptySamples);
   const revalidate = () => {
     setDate(new Date());
     setIsLoading(true);
+    setError(undefined);
+    setResult({ ...SpeedtestResultDefaultValue });
+    setSamples(emptySamples());
   };
-  let cancel = false;
   useEffect(() => {
+    // React (dev/StrictMode) and Raycast can run this effect twice for one mount. The
+    // cleanup must kill the CLI, otherwise two tests run at once and Ookla's rate limit
+    // ("Too many requests") is hit twice as fast.
+    let cancelled = false;
+    let handle: SpeedtestHandle | undefined;
+
     async function runTest() {
       try {
         await ensureCLI();
-        runSpeedTest(
+        if (cancelled) return;
+        handle = runSpeedTest(
+          (r: SpeedtestResult) => setResult((sr) => ({ ...sr, ...r })),
           (r: SpeedtestResult) => {
-            if (!cancel) {
-              setResult((sr) => ({ ...sr, ...r }));
-            }
-          },
-          (r: SpeedtestResult) => {
-            if (!cancel) {
-              setResult({ ...r });
-              setIsLoading(false);
-            }
+            setResult({ ...r });
+            setIsLoading(false);
           },
           (err: Error) => {
-            if (!cancel) {
-              setError(err.message);
-              setIsLoading(false);
-            }
+            setError(err.message);
+            setIsLoading(false);
           },
-          (prog: ResultProgress) => {
-            if (!cancel) {
-              setResultProgress(prog);
-            }
-          },
+          (prog: ResultProgress) => setResultProgress(prog),
+          (type, bandwidth) => setSamples((s) => ({ ...s, [type]: [...s[type], bandwidth] })),
         );
       } catch (err) {
-        if (!cancel) {
+        if (!cancelled) {
           setError(err instanceof Error ? err.message : "Unknown Error");
           setIsLoading(false);
         }
@@ -61,10 +63,11 @@ export function useSpeedtest(): {
     }
     runTest();
     return () => {
-      cancel = true;
+      cancelled = true;
+      handle?.cancel();
     };
   }, [date]);
-  return { result, error, isLoading, resultProgress, revalidate };
+  return { result, error, isLoading, resultProgress, samples, revalidate };
 }
 
 export const useDetailedView = (): [boolean, () => void, () => void] => {
