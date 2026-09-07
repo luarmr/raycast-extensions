@@ -4,6 +4,7 @@ import { SpeedtestHandle, SpeedtestResultDefaultValue, runSpeedTest } from "./sp
 import { ResultProgress, SpeedSamples, SpeedtestResult } from "./speedtest.types";
 
 const emptySamples = (): SpeedSamples => ({ download: [], upload: [] });
+const emptyProgress = (): ResultProgress => ({ download: undefined, upload: undefined, ping: undefined });
 
 export function useSpeedtest(): {
   result: SpeedtestResult;
@@ -17,17 +18,16 @@ export function useSpeedtest(): {
   const [error, setError] = useState<string>();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [date, setDate] = useState<Date>();
-  const [resultProgress, setResultProgress] = useState<ResultProgress>({
-    download: undefined,
-    upload: undefined,
-    ping: undefined,
-  });
+  const [resultProgress, setResultProgress] = useState<ResultProgress>(emptyProgress);
   const [samples, setSamples] = useState<SpeedSamples>(emptySamples);
   const revalidate = () => {
     setDate(new Date());
     setIsLoading(true);
     setError(undefined);
     setResult({ ...SpeedtestResultDefaultValue });
+    // Also drop the phase progress, otherwise a restart after a failed upload would
+    // briefly show "Uploading 80%" until the new run's first progress event arrives.
+    setResultProgress(emptyProgress());
     setSamples(emptySamples());
   };
   useEffect(() => {

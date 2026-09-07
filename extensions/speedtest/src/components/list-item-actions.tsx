@@ -28,9 +28,9 @@ export const ListItemActions = ({
   <ActionPanel>
     <ActionPanel.Section>
       {isDetailedViewEnabled ? hideViewAction : showViewAction}
-      {meter}
       {url && <Action.OpenInBrowser title="Open Results in Browser" url={url} />}
       {restart}
+      {meter}
     </ActionPanel.Section>
     <ActionPanel.Section>
       {summary}
