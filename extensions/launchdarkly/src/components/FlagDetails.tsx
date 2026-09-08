@@ -10,7 +10,7 @@ interface FlagDetailsProps {
 }
 
 export default function FlagDetails({ flag }: FlagDetailsProps) {
-  const { data, isLoading, error } = useLDFlagDetail(flag.key);
+  const { data, isLoading } = useLDFlagDetail(flag.key);
   const detailedFlag = data || flag;
   const envKeys = Object.keys(detailedFlag.environments || {});
   const { environmentOrder, moveEnvironment } = useEnvironmentOrder(envKeys);
@@ -24,8 +24,6 @@ export default function FlagDetails({ flag }: FlagDetailsProps) {
       {detailedFlag.environments && (
         <EnvironmentsList flag={detailedFlag} environmentOrder={environmentOrder} onMoveEnvironment={moveEnvironment} />
       )}
-
-      {error && <List.EmptyView title="Error Loading Flag" description={error.message} />}
     </List>
   );
 }

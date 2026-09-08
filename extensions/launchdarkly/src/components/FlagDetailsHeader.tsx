@@ -79,7 +79,7 @@ export default function FlagDetailsHeader({ flag, environmentOrder }: FlagDetail
         <ActionPanel>
           <Action.OpenInBrowser
             icon={Icon.Globe}
-            title="Open in Launchdarkly"
+            title="Open in LaunchDarkly"
             url={getLDUrlWithEnvs(flag, environmentOrder)}
           />
           <Action.CopyToClipboard title="Copy Feature Flag Key" content={flag.key} />

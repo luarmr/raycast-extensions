@@ -31,6 +31,7 @@ export interface LDTarget {
 }
 
 export interface LDFlagEnvironment {
+  _environmentName?: string;
   on: boolean;
   archived: boolean;
   salt: string;

@@ -9,6 +9,11 @@ interface EnvironmentsListProps {
   onMoveEnvironment: (envKey: string, direction: "up" | "down") => void;
 }
 
+// Prefer the display name returned by the API; fall back to a prettified key.
+function getEnvironmentName(envKey: string, env: LDFlagEnvironment): string {
+  return env._environmentName || capitalizeFirstLetter(envKey);
+}
+
 function formatVariation(variation: LDVariation | undefined): string {
   if (!variation) return "(No variation)";
   if (variation.name) return variation.name;
@@ -47,16 +52,21 @@ function formatRuleCompact(rule: LDFlagRule, variations: LDVariation[]): string 
   return conditions;
 }
 
+// LaunchDarkly rollout weights are expressed in thousandths of a percent (100000 = 100%).
+function formatWeight(weight: number): string {
+  const percent = weight / 1000;
+  return `${Number.isInteger(percent) ? percent : percent.toFixed(2)}%`;
+}
+
 function formatRollouts(rolloutVariations: { weight: number; variation: number }[], variations: LDVariation[]): string {
-  return rolloutVariations.map((v) => `${v.weight} ${formatVariation(variations[v.variation])}`).join(", ");
+  return rolloutVariations
+    .map((v) => `${formatWeight(v.weight)} ${formatVariation(variations[v.variation])}`)
+    .join(", ");
 }
 
 function formatFallthrough(env: LDFlagEnvironment, variations: LDVariation[]): string {
   if (env.fallthrough?.rollout) {
-    const rollouts = env.fallthrough.rollout.variations
-      .map((v) => `${v.weight} ${formatVariation(variations[v.variation])}`)
-      .join(", ");
-    return `Split [${rollouts}]`;
+    return `Split [${formatRollouts(env.fallthrough.rollout.variations, variations)}]`;
   }
 
   if (env.fallthrough?.variation !== undefined) {
@@ -68,19 +78,16 @@ function formatFallthrough(env: LDFlagEnvironment, variations: LDVariation[]): s
 
 function EnvironmentDetail({ envKey, env, flag }: { envKey: string; env: LDFlagEnvironment; flag: LDFlag }) {
   const envOn = env.on;
-  const fallthroughIndex = env.fallthrough?.variation ?? 0;
-  const offIndex = env.offVariation ?? 0;
   const variations = flag.variations || [];
-  const currentVariationIndex = envOn ? fallthroughIndex : offIndex;
-  const currentValue = variations[currentVariationIndex];
-  const currentValueText = formatVariation(currentValue);
+  // When the flag is on, the served default may be a percentage rollout rather than a single variation.
+  const currentValueText = envOn ? formatFallthrough(env, variations) : formatVariation(variations[env.offVariation]);
 
   return (
     <List.Item.Detail
       metadata={
         <List.Item.Detail.Metadata>
           <List.Item.Detail.Metadata.Label title="Name" text={flag.name || flag.key} />
-          <List.Item.Detail.Metadata.Label title="Environment" text={capitalizeFirstLetter(envKey)} />
+          <List.Item.Detail.Metadata.Label title="Environment" text={getEnvironmentName(envKey, env)} />
           <List.Item.Detail.Metadata.Label title="State" text={envOn ? "Enabled" : "Disabled"} />
           <List.Item.Detail.Metadata.Label title="Current Value" text={currentValueText} />
           <List.Item.Detail.Metadata.Label
@@ -169,21 +176,21 @@ export default function EnvironmentsList({ flag, environmentOrder, onMoveEnviron
         <List.Item
           key={envKey}
           icon={env.on ? Icon.CircleFilled : Icon.Circle}
-          title={capitalizeFirstLetter(envKey)}
+          title={getEnvironmentName(envKey, env)}
           accessories={getEnvironmentAccessories(env)}
           detail={<EnvironmentDetail envKey={envKey} env={env} flag={flag} />}
           actions={
             <ActionPanel>
               <Action.OpenInBrowser
                 icon={Icon.Globe}
-                title="Open in Launchdarkly"
+                title="Open in LaunchDarkly"
                 url={getLDUrlWithEnvs(flag, environmentOrder, envKey)}
               />
               <Action.CopyToClipboard title="Copy Feature Flag Key" content={flag.key} />
               <Action.CopyToClipboard title="Copy Environment Key" content={envKey} />
               <Action
                 icon={Icon.ArrowUp}
-                title="Move Up"
+                title="Move up"
                 shortcut={{ modifiers: ["cmd", "ctrl"], key: "arrowUp" }}
                 onAction={() => handleMove(envKey, "up")}
               />
