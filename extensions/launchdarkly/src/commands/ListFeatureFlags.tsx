@@ -11,27 +11,28 @@ import { getFullName } from "../utils/avatarUtils";
 import { getFlagUrl } from "../utils/ld-urls";
 import FlagDetails from "../components/FlagDetails";
 import SwitchProject from "../components/SwitchProject";
-import AuditLogList from "../components/AuditLogList";
+import RecentChanges from "./RecentChanges";
 import { FlagActionContext, FlagOpenActions, FlagSecondaryActions } from "../components/FlagActions";
 import { FlagMetadata } from "../components/FlagDetailsHeader";
 import { RECENT_CHANGES_SHORTCUT, SWITCH_PROJECT_SHORTCUT, TOGGLE_NAME_SHORTCUT } from "../utils/shortcuts";
 
 interface ViewActionsProps {
-  projectKey: string;
   showName: boolean;
   onToggleShowName: () => void;
   onRefresh: () => void;
 }
 
 /** Actions that apply to the whole list rather than a single flag. */
-function ViewActions({ projectKey, showName, onToggleShowName, onRefresh }: ViewActionsProps) {
+function ViewActions({ showName, onToggleShowName, onRefresh }: ViewActionsProps) {
   return (
     <ActionPanel.Section title="View">
+      {/* Push the command wrapper, not AuditLogList with a fixed projectKey, so
+          switching projects from inside the history view updates it too. */}
       <Action.Push
         icon={Icon.Clock}
         title="Show Recent Changes"
         shortcut={RECENT_CHANGES_SHORTCUT}
-        target={<AuditLogList projectKey={projectKey} />}
+        target={<RecentChanges />}
       />
       <Action.Push
         icon={Icon.Switch}
@@ -186,9 +187,7 @@ export default function ListFeatureFlags() {
   const favoriteKeys = new Set(favorites.map((f) => f.key));
   const recentsToShow = recents.filter((r) => !favoriteKeys.has(r.key)).slice(0, 5);
 
-  const viewActions = (
-    <ViewActions projectKey={projectKey} showName={showName} onToggleShowName={toggleShowName} onRefresh={revalidate} />
-  );
+  const viewActions = <ViewActions showName={showName} onToggleShowName={toggleShowName} onRefresh={revalidate} />;
 
   return (
     <List
