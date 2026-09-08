@@ -11,7 +11,7 @@ Browse your LaunchDarkly feature flags, targeting rules, environments and recent
 - 🌍 Environments with their LaunchDarkly colors, criticality, and evaluation status (new / active / inactive / launched)
 - 📜 Recent Changes: browse the audit log for the whole project or a single flag, filtered by environment
 - ⭐ Favorites and recently viewed flags at the top of the list
-- 🗂️ Switch between projects without editing preferences
+- 🗂️ Switch between projects from any command's action menu (`⌘⇧S`) without editing preferences
 - 📋 Copy the flag key, the LaunchDarkly URL, or an SDK code snippet (Node, React, Python, Go, Java, Ruby)
 - 🔗 Create Raycast quicklinks to individual flags
 - 🔄 Toggle between flag names and keys; reorder environments to your liking
@@ -24,7 +24,7 @@ Browse your LaunchDarkly feature flags, targeting rules, environments and recent
    - Create a token with the `Reader` role (the extension only reads data)
 2. Configure the extension in Raycast (`Configure Extension` action, no need to open a command):
    - **LaunchDarkly API Token**: the token from step 1
-   - **Default Project Key** (optional): used until you pick a project with *Switch Project*; defaults to `default`
+   - **Default Project Key** (optional): used until you pick a project with the *Switch Project* action; defaults to `default`
    - **LaunchDarkly Instance URL** (optional): only change for the EU instance (`https://app.eu.launchdarkly.com`) or a self-hosted relay
 
 ## Commands
@@ -63,9 +63,16 @@ The first row summarises the flag; each following row is an environment. Selecti
 
 The project's audit log, newest first, with the environment as a tag. Use the dropdown to restrict it to one environment; select an entry to read the full description and any comment. From a flag's action panel, *Show Change History* opens the same view scoped to that flag.
 
-### Switch Project
+| Shortcut | Action |
+| --- | --- |
+| `↵` | Open the history in LaunchDarkly |
+| `⌘ ⇧ C` | Copy a summary of the change |
+| `⌘ ⇧ S` | Switch project |
+| `⌘ R` | Refresh |
 
-Lists the projects your token can access and makes one the active project for all commands. The choice is remembered until you change it or reset to the preference default.
+### Switching projects
+
+*Switch Project* (`⌘⇧S`) is available in the action menu of both commands. It lists the projects your token can access and makes one the active project everywhere; the choice is remembered until you change it or reset to the preference default.
 
 ## Development
 

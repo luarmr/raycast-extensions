@@ -5,7 +5,7 @@
 ### New
 
 - 📜 **Recent Changes** command: browse the audit log for the project, filter by environment, and open a flag's own change history from its action panel
-- 🗂️ **Switch Project** command (also `⌘⇧S` in the list): pick any project your token can access; the choice is remembered across commands
+- 🗂️ **Switch Project** action (`⌘⇧S`) in every command's action menu: pick any project your token can access; the choice is remembered across commands
 - ⭐ Favorites (`⌘⇧P`) and recently viewed flags shown above the results
 - 🔎 Filter dropdown now covers state, temporary/permanent, *My Flags*, and every flag tag
 - 🌍 Environments show their LaunchDarkly color, a critical-environment marker, and the flag's evaluation status (new / active / inactive / launched) with last-requested time

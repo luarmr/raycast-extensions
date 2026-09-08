@@ -14,10 +14,7 @@ import SwitchProject from "../components/SwitchProject";
 import AuditLogList from "../components/AuditLogList";
 import { FlagActionContext, FlagOpenActions, FlagSecondaryActions } from "../components/FlagActions";
 import { FlagMetadata } from "../components/FlagDetailsHeader";
-
-const SWITCH_PROJECT_SHORTCUT: Keyboard.Shortcut = { modifiers: ["cmd", "shift"], key: "s" };
-const TOGGLE_NAME_SHORTCUT: Keyboard.Shortcut = { modifiers: ["cmd", "shift"], key: "t" };
-const RECENT_CHANGES_SHORTCUT: Keyboard.Shortcut = { modifiers: ["cmd", "shift"], key: "l" };
+import { RECENT_CHANGES_SHORTCUT, SWITCH_PROJECT_SHORTCUT, TOGGLE_NAME_SHORTCUT } from "../utils/shortcuts";
 
 interface ViewActionsProps {
   projectKey: string;

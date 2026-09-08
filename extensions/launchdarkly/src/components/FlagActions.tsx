@@ -3,6 +3,7 @@ import { LDFlag, StoredFlagRef } from "../types";
 import { getSnippets } from "../utils/snippets";
 import { toFlagRef } from "../hooks/useStoredFlags";
 import AuditLogList from "./AuditLogList";
+import { FLAG_HISTORY_SHORTCUT } from "../utils/shortcuts";
 
 export interface FlagActionContext {
   projectKey: string;
@@ -69,7 +70,7 @@ export function FlagSecondaryActions({ flag, url, projectKey, isFavorite, toggle
         <Action.Push
           icon={Icon.Clock}
           title="Show Change History"
-          shortcut={{ modifiers: ["cmd", "shift"], key: "h" }}
+          shortcut={FLAG_HISTORY_SHORTCUT}
           target={<AuditLogList projectKey={projectKey} flagKey={flag.key} flagName={flag.name} />}
         />
       </ActionPanel.Section>

@@ -7,6 +7,8 @@ import { LDAuditLogEntry } from "../types";
 import { getFullName } from "../utils/avatarUtils";
 import { formatDate, formatRelativeDate } from "../utils/format";
 import { getAuditLogUrl } from "../utils/ld-urls";
+import { SWITCH_PROJECT_SHORTCUT } from "../utils/shortcuts";
+import SwitchProject from "./SwitchProject";
 
 interface AuditLogListProps {
   projectKey: string;
@@ -65,7 +67,27 @@ export default function AuditLogList({ projectKey, flagKey, flagName }: AuditLog
     environmentKey: environmentKey || undefined,
   });
 
-  const title = flagKey ? `History: ${flagName ?? flagKey}` : "Recent Changes";
+  const title = flagKey ? `History: ${flagName ?? flagKey}` : `Recent Changes · ${projectKey}`;
+
+  // Project-wide view only: a flag's history belongs to its project.
+  const viewActions = (
+    <ActionPanel.Section title="View">
+      {!flagKey && (
+        <Action.Push
+          icon={Icon.Switch}
+          title="Switch Project"
+          shortcut={SWITCH_PROJECT_SHORTCUT}
+          target={<SwitchProject onSelect={revalidate} />}
+        />
+      )}
+      <Action
+        icon={Icon.ArrowClockwise}
+        title="Refresh"
+        shortcut={Keyboard.Shortcut.Common.Refresh}
+        onAction={revalidate}
+      />
+    </ActionPanel.Section>
+  );
 
   return (
     <List
@@ -74,6 +96,7 @@ export default function AuditLogList({ projectKey, flagKey, flagName }: AuditLog
       navigationTitle={title}
       searchBarPlaceholder="Filter changes…"
       pagination={pagination}
+      actions={<ActionPanel>{viewActions}</ActionPanel>}
       searchBarAccessory={
         <List.Dropdown tooltip="Filter by Environment" storeValue onChange={setEnvironmentKey}>
           <List.Dropdown.Item title="All Environments" value="" />
@@ -86,7 +109,19 @@ export default function AuditLogList({ projectKey, flagKey, flagName }: AuditLog
       }
     >
       {error ? (
-        <List.EmptyView icon={Icon.Warning} title="Could not load the audit log" description={error.message} />
+        <List.EmptyView
+          icon={Icon.Warning}
+          title="Could not load the audit log"
+          description={error.message}
+          actions={<ActionPanel>{viewActions}</ActionPanel>}
+        />
+      ) : entries.length === 0 && !isLoading ? (
+        <List.EmptyView
+          icon={Icon.Clock}
+          title="No changes found"
+          description={flagKey ? "This flag has no audit log entries yet" : `No recent changes in ${projectKey}`}
+          actions={<ActionPanel>{viewActions}</ActionPanel>}
+        />
       ) : (
         <List.Section title={title} subtitle={`${entries.length} entries`}>
           {entries.map((entry) => {
@@ -118,12 +153,7 @@ export default function AuditLogList({ projectKey, flagKey, flagName }: AuditLog
                       content={`${entry.title ?? entry.titleVerb ?? ""}\n${formatDate(entry.date)} by ${actor}`}
                       shortcut={Keyboard.Shortcut.Common.Copy}
                     />
-                    <Action
-                      icon={Icon.ArrowClockwise}
-                      title="Refresh"
-                      shortcut={Keyboard.Shortcut.Common.Refresh}
-                      onAction={revalidate}
-                    />
+                    {viewActions}
                   </ActionPanel>
                 }
               />

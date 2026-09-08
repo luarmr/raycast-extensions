@@ -22,13 +22,6 @@
       "subtitle": "LaunchDarkly",
       "description": "Browse the audit log of recent feature flag changes in the current project",
       "mode": "view"
-    },
-    {
-      "name": "switch-project",
-      "title": "Switch Project",
-      "subtitle": "LaunchDarkly",
-      "description": "Choose which LaunchDarkly project the other commands operate on",
-      "mode": "view"
     }
   ],
   "preferences": [
@@ -43,7 +36,7 @@
       "name": "projectKey",
       "type": "textfield",
       "title": "Default Project Key",
-      "description": "Project used until you pick another one with the Switch Project command. If left blank, defaults to 'default'.",
+      "description": "Project used until you pick another one with the Switch Project action (⌘⇧S). If left blank, defaults to 'default'.",
       "required": false
     },
     {
