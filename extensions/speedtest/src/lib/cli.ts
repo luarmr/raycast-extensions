@@ -55,7 +55,7 @@ export async function ensureCLI() {
         writer.on("finish", resolve);
         writer.on("error", reject);
       });
-    } catch (error) {
+    } catch {
       throw Error("Could not install speedtest cli");
     }
     try {
@@ -67,14 +67,14 @@ export async function ensureCLI() {
       } else {
         throw Error("hash of archive is wrong");
       }
-    } catch (error) {
+    } catch {
       throw new Error("Could not extract tgz content of speedtest cli");
     } finally {
       await afs.rm(tempDir, { recursive: true });
     }
     try {
       await afs.chmod(cli, "755");
-    } catch (error) {
+    } catch {
       await afs.rm(cli);
       throw Error("Could not chmod speedtest cli");
     }

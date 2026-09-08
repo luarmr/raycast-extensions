@@ -18,7 +18,7 @@ export const ShowMeterAction = ({ showMeter }: { showMeter: () => void }) => {
       title="Show Speed Meter"
       onAction={showMeter}
       icon={Icon.Gauge}
-      shortcut={{ modifiers: ["cmd"], key: "l" }}
+      shortcut={{ macOS: { modifiers: ["cmd"], key: "l" }, Windows: { modifiers: ["ctrl"], key: "l" } }}
     />
   );
 };

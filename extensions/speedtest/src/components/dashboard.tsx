@@ -1,4 +1,4 @@
-import { Action, ActionPanel, Color, Detail, Icon } from "@raycast/api";
+import { Action, ActionPanel, Color, Detail, Icon, Keyboard } from "@raycast/api";
 import { ClearCacheAction, CopySpeedtestResultAction, CopySummaryAction, RestartAction } from "../lib/actions";
 import { DASHBOARD_W, TestPhase, dashboardSvg } from "../lib/charts";
 import { ResultProgress, SpeedSamples, SpeedtestResult } from "../lib/speedtest.types";
@@ -126,7 +126,7 @@ export function SpeedtestDashboard(props: SpeedtestDashboardProps): JSX.Element 
             <Action
               title="Show Detailed List"
               icon={Icon.List}
-              shortcut={{ modifiers: ["cmd"], key: "l" }}
+              shortcut={{ macOS: { modifiers: ["cmd"], key: "l" }, Windows: { modifiers: ["ctrl"], key: "l" } }}
               onAction={showList}
             />
             {url && <Action.OpenInBrowser title="Open Results in Browser" url={url} />}
@@ -139,7 +139,7 @@ export function SpeedtestDashboard(props: SpeedtestDashboardProps): JSX.Element 
               title="Copy Meter Image"
               icon={Icon.Image}
               content={image}
-              shortcut={{ modifiers: ["cmd", "shift"], key: "s" }}
+              shortcut={Keyboard.Shortcut.Common.Duplicate}
             />
           </ActionPanel.Section>
           <ActionPanel.Section>
