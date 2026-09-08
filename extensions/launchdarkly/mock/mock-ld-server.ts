@@ -876,62 +876,56 @@ app.get("/api/v2/flags/:projectKey/:flagKey", (req: Request, res: Response) => {
 });
 
 // Browser pages the extension deep-links to; plain HTML echoing the parameters.
+// Everything that came from the URL is escaped before it reaches the markup.
+function escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+/** Normalise an Express param/query value (string | string[] | undefined) to a display string. */
+function queryText(value: unknown): string {
+  if (Array.isArray(value)) return value.map((v) => String(v)).join(", ");
+  return value === undefined ? "" : String(value);
+}
+
 function mockPage(title: string, rows: Record<string, string | undefined>): string {
   const items = Object.entries(rows)
-    .map(([k, v]) => `<p><strong>${k}:</strong> ${v || "(none)"}</p>`)
+    .map(([k, v]) => `<p><strong>${escapeHtml(k)}:</strong> ${escapeHtml(v || "(none)")}</p>`)
     .join("\n  ");
-  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title></head>
-<body><h1>${title}</h1>
+  return `<!DOCTYPE html><html><head><meta charset="utf-8">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'">
+<title>${escapeHtml(title)}</title></head>
+<body><h1>${escapeHtml(title)}</h1>
   ${items}
   <hr><p><em>This is a mock LaunchDarkly page.</em></p></body></html>`;
 }
 
 app.get("/projects/:projectKey/flags", (req: Request, res: Response) => {
-  res.send(mockPage("Mock LaunchDarkly Project Flags", { "Project Key": String(req.params.projectKey) }));
+  res.send(mockPage("Mock LaunchDarkly Project Flags", { "Project Key": queryText(req.params.projectKey) }));
 });
 
 app.get("/settings/history", (req: Request, res: Response) => {
-  res.send(mockPage("Mock LaunchDarkly History", { spec: String(req.query.spec ?? "") }));
+  res.send(mockPage("Mock LaunchDarkly History", { spec: queryText(req.query.spec) }));
 });
 
 app.get("/projects/:projectKey/flags/:flagKey/targeting", (req: Request, res: Response) => {
-  const { projectKey, flagKey } = req.params;
-  const envParam = req.query.env;
-  let envs: string[] = [];
-  if (typeof envParam === "string") {
-    envs = [envParam];
-  } else if (Array.isArray(envParam)) {
-    envs = envParam.map((v) => String(v));
-  }
-  const selectedEnvParam = req.query["selected-env"];
-  let selectedEnv = "";
-  if (typeof selectedEnvParam === "string") {
-    selectedEnv = selectedEnvParam;
-  } else if (Array.isArray(selectedEnvParam) && selectedEnvParam.length > 0) {
-    selectedEnv = String(selectedEnvParam[0]);
-  }
-  const html = `
-<!DOCTYPE html>
-<html>
-<head>
-  <meta charset="utf-8">
-  <title>Mock LaunchDarkly Flag Targeting</title>
-</head>
-<body>
-  <h1>Mock LaunchDarkly Flag Targeting Page</h1>
-  <p><strong>Project Key:</strong> ${projectKey}</p>
-  <p><strong>Flag Key:</strong> ${flagKey}</p>
-  <p><strong>env query params:</strong> ${envs.join(", ") || "(none)"} </p>
-  <p><strong>selected-env:</strong> ${selectedEnv || "(none)"} </p>
-  <hr>
-  <p><em>This is a mock page. Your extension is hitting /projects/:projectKey/flags/:flagKey/targeting</em></p>
-</body>
-</html>
-`;
-  res.status(200).send(html);
+  res.send(
+    mockPage("Mock LaunchDarkly Flag Targeting", {
+      "Project Key": queryText(req.params.projectKey),
+      "Flag Key": queryText(req.params.flagKey),
+      "env query params": queryText(req.query.env),
+      "selected-env": queryText(req.query["selected-env"]),
+    }),
+  );
 });
 
+// Development-only server: bind to loopback so it is never reachable from other hosts.
 const PORT = 4000;
-app.listen(PORT, () => {
-  console.log(`Mock LD server listening on http://localhost:${PORT}`);
+const HOST = "127.0.0.1";
+app.listen(PORT, HOST, () => {
+  console.log(`Mock LD server listening on http://${HOST}:${PORT}`);
 });

@@ -2,11 +2,7 @@ import { getPreferenceValues } from "@raycast/api";
 
 export const LD_API_VERSION = "20240415";
 
-interface Preferences {
-  apiToken: string;
-  projectKey?: string;
-  ldApiUrl?: string;
-}
+// `Preferences` is the global type generated from package.json into raycast-env.d.ts.
 
 export function getBaseUrl(): string {
   const { ldApiUrl } = getPreferenceValues<Preferences>();
