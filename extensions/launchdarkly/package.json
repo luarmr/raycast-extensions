@@ -15,6 +15,20 @@
       "subtitle": "LaunchDarkly",
       "description": "List and search through your LaunchDarkly feature flags, view their details, and manage environments",
       "mode": "view"
+    },
+    {
+      "name": "recent-changes",
+      "title": "Recent Changes",
+      "subtitle": "LaunchDarkly",
+      "description": "Browse the audit log of recent feature flag changes in the current project",
+      "mode": "view"
+    },
+    {
+      "name": "switch-project",
+      "title": "Switch Project",
+      "subtitle": "LaunchDarkly",
+      "description": "Choose which LaunchDarkly project the other commands operate on",
+      "mode": "view"
     }
   ],
   "preferences": [
@@ -28,8 +42,8 @@
     {
       "name": "projectKey",
       "type": "textfield",
-      "title": "LaunchDarkly Project Key",
-      "description": "If left blank, defaults to 'default'.",
+      "title": "Default Project Key",
+      "description": "Project used until you pick another one with the Switch Project command. If left blank, defaults to 'default'.",
       "required": false
     },
     {
