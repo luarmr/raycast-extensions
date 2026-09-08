@@ -6,12 +6,12 @@ type ListItemActionsProps = {
   isLoading: boolean;
   url: string;
   sectionClipboard: ClipboardData;
-  summary: JSX.Element;
-  restart: JSX.Element;
-  meter: JSX.Element;
+  summary: React.ReactNode;
+  restart: React.ReactNode;
+  meter: React.ReactNode;
   isDetailedViewEnabled: boolean;
-  showViewAction: JSX.Element;
-  hideViewAction: JSX.Element;
+  showViewAction: React.ReactNode;
+  hideViewAction: React.ReactNode;
 };
 
 export const ListItemActions = ({

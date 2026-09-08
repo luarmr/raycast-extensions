@@ -11,18 +11,11 @@ type SpeedListItemProps = {
   fullSpeedInfo: Speed;
   progress?: number;
   samples?: number[];
-  children: JSX.Element;
+  children?: React.ReactNode;
   type: "Upload" | "Download";
 };
 
-export function SpeedListItem({
-  progress,
-  fullSpeedInfo,
-  children,
-  speed,
-  type,
-  samples = [],
-}: SpeedListItemProps): JSX.Element {
+export function SpeedListItem({ progress, fullSpeedInfo, children, speed, type, samples = [] }: SpeedListItemProps) {
   const color = type === "Download" ? theme.download : theme.upload;
   const isRunning = progress !== undefined && progress < 1;
   const icon = isRunning

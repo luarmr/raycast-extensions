@@ -1,5 +1,4 @@
 import { environment } from "@raycast/api";
-import axios from "axios";
 import fs from "fs";
 import afs from "fs/promises";
 import path from "path";
@@ -45,16 +44,13 @@ export async function ensureCLI() {
     const dir = path.join(environment.supportPath, "cli");
     const tempDir = path.join(environment.supportPath, ".tmp");
     try {
-      const response = await axios.get(binaryURL, { responseType: "stream" });
+      const response = await fetch(binaryURL);
+      if (!response.ok) {
+        throw new Error("Could not install speedtest cli");
+      }
       await afs.mkdir(tempDir, { recursive: true });
       const filePath = path.join(tempDir, cliFileInfo.pkg);
-      const writer = fs.createWriteStream(filePath);
-      response.data.pipe(writer);
-
-      await new Promise((resolve, reject) => {
-        writer.on("finish", resolve);
-        writer.on("error", reject);
-      });
+      await afs.writeFile(filePath, new Uint8Array(await response.arrayBuffer()));
     } catch {
       throw Error("Could not install speedtest cli");
     }

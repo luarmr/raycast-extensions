@@ -8,10 +8,10 @@ import { ListItemMetadata } from "./list-item-metadata";
 type ResultListItemProps = {
   speedtestResult: SpeedtestResult;
   isLoading: boolean;
-  children: JSX.Element;
+  children?: React.ReactNode;
 };
 
-export function ResultListItem({ speedtestResult, isLoading, children }: ResultListItemProps): JSX.Element {
+export function ResultListItem({ speedtestResult, isLoading, children }: ResultListItemProps) {
   const { url } = speedtestResult.result;
   const markdown = mdImg(summarySvg(speedtestResult), "Speedtest summary", 320);
   return (

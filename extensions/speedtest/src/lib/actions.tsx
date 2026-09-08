@@ -65,7 +65,7 @@ export function ClearCacheAction(props: { isLoading: boolean }) {
   );
 }
 
-export function CopySummaryAction(props: { result: SpeedtestResult }): JSX.Element {
+export function CopySummaryAction(props: { result: SpeedtestResult }) {
   const r = props.result;
   const parts: string[] = [
     `ISP: ${r.isp}`,
@@ -84,7 +84,7 @@ export function CopySummaryAction(props: { result: SpeedtestResult }): JSX.Eleme
   );
 }
 
-export function CopySpeedtestResultAction({ result }: { result: ClipboardData }): JSX.Element {
+export function CopySpeedtestResultAction({ result }: { result: ClipboardData }) {
   return (
     <Action.CopyToClipboard
       title="Copy Section to Clipboard"

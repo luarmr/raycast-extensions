@@ -10,10 +10,10 @@ type PingListItemProps = {
   ping: number;
   fullPingData: Ping;
   progress?: number;
-  children: JSX.Element;
+  children?: React.ReactNode;
 };
 
-export function PingListItem({ ping, fullPingData, progress, children }: PingListItemProps): JSX.Element {
+export function PingListItem({ ping, fullPingData, progress, children }: PingListItemProps) {
   const isRunning = progress !== undefined && progress < 1;
   const icon = isRunning ? { source: toUri(progressRingIcon(progress, theme.ping)) } : icons.ping;
   const markdown = mdImg(latencySvg(fullPingData, "Idle latency"), "Ping latency", 320);

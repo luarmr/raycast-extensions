@@ -55,7 +55,7 @@ const activities = [
   { title: "Streaming", icon: Icon.Livestream, activity: ActivitySpeedQualityBandwidth.stream },
 ];
 
-export function SpeedtestDashboard(props: SpeedtestDashboardProps): JSX.Element {
+export function SpeedtestDashboard(props: SpeedtestDashboardProps) {
   const { result, error, isLoading, resultProgress, samples, revalidate, showList } = props;
   const phase = currentPhase(isLoading, result, error, resultProgress);
   const errorMessage = error ?? result.error;
