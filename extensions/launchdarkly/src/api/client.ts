@@ -74,3 +74,30 @@ export async function ldFetch<T>(path: string, params?: QueryParams): Promise<T>
   const response = await fetch(ldUrl(path, params), { headers: ldHeaders() });
   return parseJsonResponse<T>(response);
 }
+
+interface PaginatedPage<T> {
+  items?: T[];
+  _links?: { next?: { href: string } };
+}
+
+/** Upper bound on pages followed, so a misbehaving `next` link cannot loop forever. */
+const MAX_PAGES = 50;
+
+/**
+ * Fetch every item of a paginated collection by following `_links.next`.
+ * `next.href` is a path relative to the API origin (`/api/v2/...?offset=...`).
+ */
+export async function ldFetchAll<T>(path: string, params?: QueryParams): Promise<T[]> {
+  const items: T[] = [];
+  let next: string | undefined = ldUrl(path, params);
+
+  for (let page = 0; next && page < MAX_PAGES; page++) {
+    const response = await fetch(next, { headers: ldHeaders() });
+    const body: PaginatedPage<T> = await parseJsonResponse<PaginatedPage<T>>(response);
+    items.push(...(body.items ?? []));
+    const href = body._links?.next?.href;
+    next = href ? new URL(href, getBaseUrl()).toString() : undefined;
+  }
+
+  return items;
+}

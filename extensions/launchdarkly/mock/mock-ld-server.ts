@@ -761,8 +761,21 @@ app.get("/api/v2/flags/:projectKey", (req: Request, res: Response) => {
   });
 });
 
-app.get("/api/v2/projects", (_req: Request, res: Response) => {
-  res.json({ items: PROJECTS, totalCount: PROJECTS.length, _links: {} });
+// Paginated like the real endpoint so `_links.next` handling is exercised;
+// pass a small `limit` (e.g. 1) to see the picker stitch pages together.
+app.get("/api/v2/projects", (req: Request, res: Response) => {
+  const limit = Math.max(1, parseInt(String(req.query.limit ?? "20"), 10) || 20);
+  const offset = Math.max(0, parseInt(String(req.query.offset ?? "0"), 10) || 0);
+  const items = PROJECTS.slice(offset, offset + limit);
+  const links: Record<string, { href: string; type: string }> = {
+    self: { href: req.originalUrl, type: "application/json" },
+  };
+  if (offset + limit < PROJECTS.length) {
+    const next = new URL(req.originalUrl, "http://localhost");
+    next.searchParams.set("offset", String(offset + limit));
+    links.next = { href: next.pathname + next.search, type: "application/json" };
+  }
+  res.json({ items, totalCount: PROJECTS.length, _links: links });
 });
 
 app.get("/api/v2/projects/:projectKey/environments", (req: Request, res: Response) => {

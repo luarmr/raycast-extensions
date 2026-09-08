@@ -1,4 +1,4 @@
-import { ldFetch } from "./client";
+import { ldFetch, ldFetchAll } from "./client";
 import {
   LDAuditLogEntry,
   LDAuditLogResponse,
@@ -6,43 +6,41 @@ import {
   LDFlag,
   LDFlagStatusResponse,
   LDMember,
-  LDPaginated,
   LDProject,
   LDSegment,
 } from "../types";
 
 const enc = encodeURIComponent;
 
+/** Largest page size these collection endpoints accept. */
+const PAGE_SIZE = 100;
+
 export function fetchFlag(projectKey: string, flagKey: string): Promise<LDFlag> {
   return ldFetch<LDFlag>(`/api/v2/flags/${enc(projectKey)}/${enc(flagKey)}`);
 }
 
-export async function fetchProjects(): Promise<LDProject[]> {
-  const result = await ldFetch<LDPaginated<LDProject>>("/api/v2/projects", { limit: 100, sort: "name" });
-  return result.items ?? [];
+// The collection endpoints below are fully drained by following `_links.next`,
+// so accounts with more than one page of projects, environments, tags or
+// segments see everything rather than the first page only.
+
+export function fetchProjects(): Promise<LDProject[]> {
+  return ldFetchAll<LDProject>("/api/v2/projects", { limit: PAGE_SIZE, sort: "name" });
 }
 
-export async function fetchEnvironments(projectKey: string): Promise<LDEnvironment[]> {
-  const result = await ldFetch<LDPaginated<LDEnvironment>>(`/api/v2/projects/${enc(projectKey)}/environments`, {
-    limit: 100,
-  });
-  return result.items ?? [];
+export function fetchEnvironments(projectKey: string): Promise<LDEnvironment[]> {
+  return ldFetchAll<LDEnvironment>(`/api/v2/projects/${enc(projectKey)}/environments`, { limit: PAGE_SIZE });
 }
 
 export function fetchFlagStatus(projectKey: string, flagKey: string): Promise<LDFlagStatusResponse> {
   return ldFetch<LDFlagStatusResponse>(`/api/v2/flag-status/${enc(projectKey)}/${enc(flagKey)}`);
 }
 
-export async function fetchFlagTags(): Promise<string[]> {
-  const result = await ldFetch<LDPaginated<string>>("/api/v2/tags", { kind: "flag", limit: 100 });
-  return result.items ?? [];
+export function fetchFlagTags(): Promise<string[]> {
+  return ldFetchAll<string>("/api/v2/tags", { kind: "flag", limit: PAGE_SIZE });
 }
 
-export async function fetchSegments(projectKey: string, environmentKey: string): Promise<LDSegment[]> {
-  const result = await ldFetch<LDPaginated<LDSegment>>(`/api/v2/segments/${enc(projectKey)}/${enc(environmentKey)}`, {
-    limit: 100,
-  });
-  return result.items ?? [];
+export function fetchSegments(projectKey: string, environmentKey: string): Promise<LDSegment[]> {
+  return ldFetchAll<LDSegment>(`/api/v2/segments/${enc(projectKey)}/${enc(environmentKey)}`, { limit: PAGE_SIZE });
 }
 
 export function fetchMe(): Promise<LDMember> {
