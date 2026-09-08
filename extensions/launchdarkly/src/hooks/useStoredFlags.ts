@@ -1,6 +1,12 @@
-import { useLocalStorage } from "@raycast/utils";
+import { useCachedState } from "@raycast/utils";
 import { LDFlag, StoredFlagRef } from "../types";
 
+// Favorites and recents are shared by every mounted view (list, pushed details,
+// environment rows). `useCachedState` persists the value and notifies every
+// subscriber on change, so a toggle in a pushed view is reflected in the list
+// underneath as soon as the user pops back. The dedicated namespace keeps this
+// user data apart from the API response cache.
+const CACHE_NAMESPACE = "stored-flags";
 const FAVORITES_KEY = "FAVORITE_FLAGS";
 const RECENTS_KEY = "RECENT_FLAGS";
 const MAX_RECENTS = 10;
@@ -14,34 +20,31 @@ export function toFlagRef(projectKey: string, flag: LDFlag): StoredFlagRef {
 }
 
 export function useFavorites(projectKey: string) {
-  const { value, setValue, isLoading } = useLocalStorage<StoredFlagRef[]>(FAVORITES_KEY, []);
-  const all = value ?? [];
+  const [all, setAll] = useCachedState<StoredFlagRef[]>(FAVORITES_KEY, [], { cacheNamespace: CACHE_NAMESPACE });
   const favorites = all.filter((f) => f.projectKey === projectKey);
 
   return {
     favorites,
-    isLoading,
     isFavorite: (flag: { key: string }) => favorites.some((f) => f.key === flag.key),
-    toggleFavorite: async (ref: StoredFlagRef) => {
+    /** Returns true when the flag was added, false when it was removed. */
+    toggleFavorite: (ref: StoredFlagRef): boolean => {
       const exists = all.some((f) => sameFlag(f, ref));
-      await setValue(exists ? all.filter((f) => !sameFlag(f, ref)) : [...all, ref]);
+      setAll(exists ? all.filter((f) => !sameFlag(f, ref)) : [...all, ref]);
       return !exists;
     },
   };
 }
 
 export function useRecents(projectKey: string) {
-  const { value, setValue, isLoading } = useLocalStorage<StoredFlagRef[]>(RECENTS_KEY, []);
-  const all = value ?? [];
+  const [all, setAll] = useCachedState<StoredFlagRef[]>(RECENTS_KEY, [], { cacheNamespace: CACHE_NAMESPACE });
   const recents = all.filter((f) => f.projectKey === projectKey);
 
   return {
     recents,
-    isLoading,
     recordVisit: (ref: StoredFlagRef) => {
       const rest = all.filter((f) => !sameFlag(f, ref));
-      return setValue([{ ...ref, visitedAt: Date.now() }, ...rest].slice(0, MAX_RECENTS * 3));
+      setAll([{ ...ref, visitedAt: Date.now() }, ...rest].slice(0, MAX_RECENTS * 3));
     },
-    clearRecents: () => setValue(all.filter((f) => f.projectKey !== projectKey)),
+    clearRecents: () => setAll(all.filter((f) => f.projectKey !== projectKey)),
   };
 }

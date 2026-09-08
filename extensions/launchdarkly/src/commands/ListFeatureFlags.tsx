@@ -64,11 +64,13 @@ interface FlagListItemProps extends FlagActionContext {
 }
 
 function FlagListItem({ flag, showName, envKeys, viewActions, ...context }: FlagListItemProps) {
+  const { isFavorite } = useFavorites(context.projectKey);
+  const { recordVisit } = useRecents(context.projectKey);
   const maintainer = flag._maintainer;
   const icon = maintainer ? getAvatarIcon(getFullName(maintainer) || "?") : Icon.Person;
   const url = getFlagUrl(context.projectKey, flag.key, envKeys);
   const accessories: List.Item.Accessory[] = [];
-  if (context.isFavorite(flag)) accessories.push({ icon: Icon.Star, tooltip: "Favorite" });
+  if (isFavorite(flag)) accessories.push({ icon: Icon.Star, tooltip: "Favorite" });
   if (flag.temporary) accessories.push({ tag: "Temporary" });
 
   return (
@@ -86,7 +88,7 @@ function FlagListItem({ flag, showName, envKeys, viewActions, ...context }: Flag
             icon={Icon.Sidebar}
             title="Show Details"
             target={<FlagDetails flagKey={flag.key} initialFlag={flag} {...context} />}
-            onPush={() => context.recordVisit(toFlagRef(context.projectKey, flag))}
+            onPush={() => recordVisit(toFlagRef(context.projectKey, flag))}
           />
           <FlagOpenActions flag={flag} url={url} {...context} />
           <FlagSecondaryActions flag={flag} url={url} {...context} />
@@ -107,6 +109,7 @@ interface StoredFlagItemProps extends FlagActionContext {
 
 /** A favorite or recently viewed flag; only the key and name are known until details are opened. */
 function StoredFlagItem({ flagRef: ref, icon, envKeys, viewActions, extraActions, ...context }: StoredFlagItemProps) {
+  const { recordVisit } = useRecents(context.projectKey);
   const url = getFlagUrl(context.projectKey, ref.key, envKeys);
   return (
     <List.Item
@@ -136,13 +139,13 @@ function StoredFlagItem({ flagRef: ref, icon, envKeys, viewActions, extraActions
             icon={Icon.Sidebar}
             title="Show Details"
             target={<FlagDetails flagKey={ref.key} {...context} />}
-            onPush={() => context.recordVisit(ref)}
+            onPush={() => recordVisit(ref)}
           />
           <Action.OpenInBrowser
             icon={Icon.Globe}
             title="Open in LaunchDarkly"
             url={url}
-            onOpen={() => context.recordVisit(ref)}
+            onOpen={() => recordVisit(ref)}
           />
           <Action.CopyToClipboard
             title="Copy Feature Flag Key"
@@ -166,8 +169,8 @@ export default function ListFeatureFlags() {
   const { me, isLoading: meLoading } = useMe();
   const tags = useFlagTags();
   const { environments } = useEnvironments(projectKey, !projectLoading);
-  const { favorites, isFavorite, toggleFavorite } = useFavorites(projectKey);
-  const { recents, recordVisit, clearRecents } = useRecents(projectKey);
+  const { favorites, toggleFavorite } = useFavorites(projectKey);
+  const { recents, clearRecents } = useRecents(projectKey);
 
   // "My Flags" needs the caller's member ID; if that lookup fails (e.g. a service
   // token), fall back to Live rather than showing an empty list forever.
@@ -181,7 +184,7 @@ export default function ListFeatureFlags() {
     enabled: !projectLoading,
   });
 
-  const context: FlagActionContext = { projectKey, isFavorite, toggleFavorite, recordVisit };
+  const context: FlagActionContext = { projectKey };
   const envKeys = environments.map((env) => env.key);
   const showStored = searchText.trim() === "" && filter === "state:live";
   const favoriteKeys = new Set(favorites.map((f) => f.key));

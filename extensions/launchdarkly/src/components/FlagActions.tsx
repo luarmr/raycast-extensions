@@ -1,15 +1,17 @@
 import { Action, ActionPanel, Icon, Keyboard, showToast, Toast } from "@raycast/api";
-import { LDFlag, StoredFlagRef } from "../types";
+import { LDFlag } from "../types";
 import { getSnippets } from "../utils/snippets";
-import { toFlagRef } from "../hooks/useStoredFlags";
+import { toFlagRef, useFavorites, useRecents } from "../hooks/useStoredFlags";
 import AuditLogList from "./AuditLogList";
 import { FLAG_HISTORY_SHORTCUT } from "../utils/shortcuts";
 
+/**
+ * What a flag action needs from its surroundings. Favorites and recents are not
+ * passed down: each action subscribes to the shared store itself, so a pushed
+ * details view never holds on to callbacks captured by the list that pushed it.
+ */
 export interface FlagActionContext {
   projectKey: string;
-  isFavorite: (flag: { key: string }) => boolean;
-  toggleFavorite: (ref: StoredFlagRef) => Promise<boolean>;
-  recordVisit: (ref: StoredFlagRef) => Promise<void>;
 }
 
 interface FlagActionsProps extends FlagActionContext {
@@ -19,7 +21,9 @@ interface FlagActionsProps extends FlagActionContext {
 }
 
 /** Actions shared by the flag list and the details view. Wrap in an ActionPanel. */
-export function FlagOpenActions({ flag, url, projectKey, recordVisit }: FlagActionsProps) {
+export function FlagOpenActions({ flag, url, projectKey }: FlagActionsProps) {
+  const { recordVisit } = useRecents(projectKey);
+
   return (
     <>
       <Action.OpenInBrowser
@@ -37,7 +41,8 @@ export function FlagOpenActions({ flag, url, projectKey, recordVisit }: FlagActi
   );
 }
 
-export function FlagSecondaryActions({ flag, url, projectKey, isFavorite, toggleFavorite }: FlagActionsProps) {
+export function FlagSecondaryActions({ flag, url, projectKey }: FlagActionsProps) {
+  const { isFavorite, toggleFavorite } = useFavorites(projectKey);
   const favorite = isFavorite(flag);
 
   return (
@@ -60,7 +65,7 @@ export function FlagSecondaryActions({ flag, url, projectKey, isFavorite, toggle
           title={favorite ? "Remove from Favorites" : "Add to Favorites"}
           shortcut={Keyboard.Shortcut.Common.Pin}
           onAction={async () => {
-            const added = await toggleFavorite(toFlagRef(projectKey, flag));
+            const added = toggleFavorite(toFlagRef(projectKey, flag));
             await showToast({
               style: Toast.Style.Success,
               title: added ? "Added to favorites" : "Removed from favorites",
