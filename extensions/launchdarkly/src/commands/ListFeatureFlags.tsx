@@ -37,7 +37,7 @@ function ViewActions({ projectKey, showName, onToggleShowName, onRefresh }: View
         icon={Icon.Switch}
         title="Switch Project"
         shortcut={SWITCH_PROJECT_SHORTCUT}
-        target={<SwitchProject onSelect={onRefresh} />}
+        target={<SwitchProject />}
       />
       <Action
         icon={Icon.Text}
@@ -162,16 +162,20 @@ export default function ListFeatureFlags() {
   const { showName, toggleShowName } = useShowNamePreference();
 
   const { projectKey, isLoading: projectLoading } = useProjectKey();
-  const { me } = useMe();
+  const { me, isLoading: meLoading } = useMe();
   const tags = useFlagTags();
   const { environments } = useEnvironments(projectKey, !projectLoading);
   const { favorites, isFavorite, toggleFavorite } = useFavorites(projectKey);
   const { recents, recordVisit, clearRecents } = useRecents(projectKey);
 
+  // "My Flags" needs the caller's member ID; if that lookup fails (e.g. a service
+  // token), fall back to Live rather than showing an empty list forever.
+  const effectiveFilter: FlagFilterValue = filter === "mine" && !me && !meLoading ? "state:live" : filter;
+
   const { flags, totalCount, isLoading, error, pagination, revalidate } = useLDFlags({
     projectKey,
     searchText,
-    filter,
+    filter: effectiveFilter,
     memberId: me?._id,
     enabled: !projectLoading,
   });
@@ -231,7 +235,7 @@ export default function ListFeatureFlags() {
           actions={
             <ActionPanel>
               <Action icon={Icon.ArrowClockwise} title="Retry" onAction={revalidate} />
-              <Action.Push icon={Icon.Switch} title="Switch Project" target={<SwitchProject onSelect={revalidate} />} />
+              <Action.Push icon={Icon.Switch} title="Switch Project" target={<SwitchProject />} />
             </ActionPanel>
           }
         />
@@ -305,11 +309,7 @@ export default function ListFeatureFlags() {
               }
               actions={
                 <ActionPanel>
-                  <Action.Push
-                    icon={Icon.Switch}
-                    title="Switch Project"
-                    target={<SwitchProject onSelect={revalidate} />}
-                  />
+                  <Action.Push icon={Icon.Switch} title="Switch Project" target={<SwitchProject />} />
                 </ActionPanel>
               }
             />

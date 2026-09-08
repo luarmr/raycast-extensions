@@ -77,7 +77,7 @@ export default function AuditLogList({ projectKey, flagKey, flagName }: AuditLog
           icon={Icon.Switch}
           title="Switch Project"
           shortcut={SWITCH_PROJECT_SHORTCUT}
-          target={<SwitchProject onSelect={revalidate} />}
+          target={<SwitchProject />}
         />
       )}
       <Action

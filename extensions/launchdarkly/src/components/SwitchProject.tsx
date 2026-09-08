@@ -3,20 +3,18 @@ import { useProjectKey } from "../hooks/useProjectKey";
 import { useProjects } from "../hooks/useLDMetadata";
 import { getProjectUrl } from "../utils/ld-urls";
 
-interface SwitchProjectProps {
-  /** Called after a project is selected (e.g. to refresh the caller). */
-  onSelect?: (projectKey: string) => void;
-}
-
-export default function SwitchProject({ onSelect }: SwitchProjectProps) {
+/**
+ * Pick the active project. The selection lives in shared cached state, so the
+ * views underneath re-query automatically; no callback is needed.
+ */
+export default function SwitchProject() {
   const { pop } = useNavigation();
   const { projectKey: current, setProjectKey, resetProjectKey, isDefault } = useProjectKey();
   const { data: projects, isLoading } = useProjects();
 
   async function select(key: string, name: string) {
-    await setProjectKey(key);
+    setProjectKey(key);
     await showToast({ style: Toast.Style.Success, title: `Switched to ${name}` });
-    onSelect?.(key);
     pop();
   }
 
@@ -50,7 +48,7 @@ export default function SwitchProject({ onSelect }: SwitchProjectProps) {
                       icon={Icon.Undo}
                       title="Reset to Preference Default"
                       onAction={async () => {
-                        await resetProjectKey();
+                        resetProjectKey();
                         await showToast({ style: Toast.Style.Success, title: "Using project from preferences" });
                         pop();
                       }}
