@@ -19,8 +19,9 @@ export function useLDFlags({ searchText = "", stateFilter = "live" }: UseLDFlags
       const limit = 20;
       const offset = options.page * limit;
 
+      // The list view only needs flag-level metadata and environment keys; the detail
+      // view fetches the full per-environment configuration for a single flag.
       const params = new URLSearchParams({
-        expand: "environments,variations,rules,fallthrough,targets,prerequisites",
         sort: "-creationDate",
         limit: limit.toString(),
         offset: offset.toString(),
@@ -32,7 +33,7 @@ export function useLDFlags({ searchText = "", stateFilter = "live" }: UseLDFlags
       if (filters.length > 0) {
         params.append("filter", filters.join(","));
       }
-      return `${getLDBaseUrl()}/api/v2/flags/${projectKey}?${params.toString()}`;
+      return `${getLDBaseUrl()}/api/v2/flags/${encodeURIComponent(projectKey)}?${params.toString()}`;
     },
     {
       headers: {

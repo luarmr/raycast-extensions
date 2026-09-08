@@ -20,13 +20,12 @@ export default function ListFeatureFlags() {
 
   const { showName, toggleShowName } = useShowNamePreference();
 
-  const { flags, totalCount, isLoading, error, pagination, revalidate } = useLDFlags({ searchText, stateFilter }) as {
+  const { flags, totalCount, isLoading, error, pagination } = useLDFlags({ searchText, stateFilter }) as {
     flags: LDFlag[];
     totalCount: number;
     isLoading: boolean;
     error: Error | undefined;
     pagination: FetchPagination;
-    revalidate: () => void;
   };
 
   const [selectedFlagKey, setSelectedFlagKey] = useState<string>();
@@ -71,13 +70,7 @@ export default function ListFeatureFlags() {
       }}
       filtering={false}
       searchBarAccessory={
-        <List.Dropdown
-          tooltip="Filter by State"
-          onChange={(newValue) => {
-            setStateFilter(newValue);
-            revalidate();
-          }}
-        >
+        <List.Dropdown tooltip="Filter by State" onChange={setStateFilter}>
           <List.Dropdown.Item title="Live" value="live" />
           <List.Dropdown.Item title="Deprecated" value="deprecated" />
           <List.Dropdown.Item title="Archived" value="archived" />

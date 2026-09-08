@@ -6,12 +6,10 @@ import { getLDBaseUrl, getLDPreferences } from "../utils/ld-urls";
 export function useLDFlagDetail(flagKey: string) {
   const { apiToken, projectKey } = getLDPreferences();
 
-  const query = new URLSearchParams();
-  query.set("expand", "environments,variations,rules,fallthrough,targets,prerequisites");
-
   const baseUrl = getLDBaseUrl();
+  // The single-flag endpoint returns full targeting configuration for every environment by default.
   const { data, isLoading, error, revalidate } = useFetch<LDFlag>(
-    `${baseUrl}/api/v2/flags/${encodeURIComponent(projectKey)}/${encodeURIComponent(flagKey)}?${query.toString()}`,
+    `${baseUrl}/api/v2/flags/${encodeURIComponent(projectKey)}/${encodeURIComponent(flagKey)}`,
     {
       headers: {
         Authorization: apiToken,
