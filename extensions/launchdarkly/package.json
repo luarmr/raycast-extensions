@@ -5,8 +5,15 @@
   "description": "Browse LaunchDarkly feature flags, targeting rules, environments and recent changes without leaving Raycast",
   "icon": "launchdarkly-transparent-bg.png",
   "author": "luarmr",
-  "categories": ["Developer Tools"],
-  "keywords": ["ld", "feature flags", "flags", "targeting"],
+  "categories": [
+    "Developer Tools"
+  ],
+  "keywords": [
+    "ld",
+    "feature flags",
+    "flags",
+    "targeting"
+  ],
   "license": "MIT",
   "commands": [
     {
@@ -73,5 +80,8 @@
     "prepublishOnly": "echo \"\\n\\nIt seems like you are trying to publish the Raycast extension to npm.\\n\\nIf you did intend to publish it to npm, remove the \\`prepublishOnly\\` script and rerun \\`npm publish\\` again.\\nIf you wanted to publish it to the Raycast Store instead, use \\`npm run publish\\` instead.\\n\\n\" && exit 1",
     "publish": "npx @raycast/api@latest publish",
     "mock-server": "ts-node ./mock/mock-ld-server.ts"
-  }
+  },
+  "platforms": [
+    "macOS"
+  ]
 }
