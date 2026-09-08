@@ -1,7 +1,28 @@
 import express, { Request, Response } from "express";
 import cors from "cors";
 
-const ENV_KEYS = ["dev", "qa", "staging", "production", "demo"];
+const ENVIRONMENTS = [
+  { key: "dev", name: "Development", color: "7B42BC", critical: false },
+  { key: "qa", name: "QA", color: "F5A623", critical: false },
+  { key: "staging", name: "Staging", color: "417505", critical: false },
+  { key: "production", name: "Production", color: "D0021B", critical: true },
+  { key: "demo", name: "Demo", color: "4A90E2", critical: false },
+];
+const ENV_KEYS = ENVIRONMENTS.map((e) => e.key);
+const envName = (key: string) => ENVIRONMENTS.find((e) => e.key === key)?.name ?? key;
+
+const PROJECTS = [
+  { _id: "p1", key: "default", name: "Default Project", tags: [] },
+  { _id: "p2", key: "mobile", name: "Mobile Apps", tags: ["ios", "android"] },
+  { _id: "p3", key: "web", name: "Web Platform", tags: [] },
+];
+
+const SEGMENTS = [
+  { key: "beta-testers", name: "Beta Testers", description: "Opted-in beta users" },
+  { key: "internal-staff", name: "Internal Staff", description: "Employees" },
+];
+
+const ME = { _id: "member-me", firstName: "Mocky", lastName: "McMockFace-1", email: "mocky1@example.com", role: "reader" };
 
 const POSSIBLE_VARIATIONS = [
   { value: true, name: "Enabled" },
@@ -24,7 +45,7 @@ function createMockFlag(index: number) {
     creationDate: Date.now() - index * 100000,
     tags: index % 10 === 0 ? ["test", "mock"] : ["mock"],
     _maintainer: {
-      _id: `mock-maintainer-${index}`,
+      _id: index === 1 ? ME._id : `mock-maintainer-${index}`,
       firstName: "Mocky",
       lastName: `McMockFace-${index}`,
       email: `mocky${index}@example.com`,
@@ -42,6 +63,7 @@ function createMockFlag(index: number) {
       const isOn = index % 3 !== 0;
       const offVariation = 1;
       acc[envKey] = {
+        _environmentName: envName(envKey),
         on: isOn,
         archived: false,
         salt: "random_salt",
@@ -88,14 +110,26 @@ const allPositiveRulesFlag = {
   version: 2000,
   environments: {
     dev: {
+      _environmentName: "Development",
       on: true,
       archived: false,
       salt: "random_salt",
       sel: "random_sel",
       lastModified: Date.now() - 77777,
       version: 2000,
-      targets: [],
+      targets: [{ values: ["user-1", "user-2"], variation: 0 }],
+      contextTargets: [
+        { contextKind: "user", values: [], variation: 0 },
+        { contextKind: "organization", values: ["acme-corp"], variation: 3 },
+      ],
       rules: [
+        {
+          _id: "rule-segment",
+          description: "Beta cohort",
+          variation: 2,
+          clauses: [{ attribute: "segmentMatch", op: "segmentMatch", values: ["beta-testers"], negate: false }],
+          rollout: null,
+        },
         {
           variation: 2,
           clauses: [
@@ -646,19 +680,138 @@ app.get("/api/v2/flags/:projectKey", (req: Request, res: Response) => {
       filteredFlags = filteredFlags.filter((f) => !f.archived && !f.deprecated);
     }
     
-    // remove enviroments from the flags
-    filteredFlags = filteredFlags.map((f) => {
-      const { environments, ...rest } = f;
-      return { ...rest, environments: {} };
-    });
+    if (filterStr.includes("type:temporary")) {
+      filteredFlags = filteredFlags.filter((f) => f.temporary);
+    } else if (filterStr.includes("type:permanent")) {
+      filteredFlags = filteredFlags.filter((f) => !f.temporary);
+    }
+    const maintainerMatch = /maintainerid:([^,]+)/.exec(filterStr);
+    if (maintainerMatch) {
+      filteredFlags = filteredFlags.filter((f) => f._maintainer._id.toLowerCase() === maintainerMatch[1]);
+    }
+    const tagsMatch = /tags:([^,]+)/.exec(filterStr);
+    if (tagsMatch) {
+      const wanted = tagsMatch[1].split("+");
+      filteredFlags = filteredFlags.filter((f) => wanted.every((t) => f.tags.includes(t)));
+    }
   }
 
-  const paged = filteredFlags.slice(intOffset, intOffset + intLimit);
+  // API version 20240415 omits `environments` from the list endpoint unless
+  // `filterEnv` is used; mirror that so the extension exercises the detail fetch.
+  const listFlags = filteredFlags.map((f) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { environments, ...rest } = f;
+    return rest;
+  });
+
+  const paged = listFlags.slice(intOffset, intOffset + intLimit);
+  const nextOffset = intOffset + intLimit;
+  const links: Record<string, { href: string; type: string }> = {
+    self: { href: req.originalUrl, type: "application/json" },
+  };
+  if (nextOffset < filteredFlags.length) {
+    const next = new URL(req.originalUrl, "http://localhost");
+    next.searchParams.set("offset", String(nextOffset));
+    links.next = { href: next.pathname + next.search, type: "application/json" };
+  }
 
   res.json({
     items: paged,
     totalCount: filteredFlags.length,
+    _links: links,
   });
+});
+
+app.get("/api/v2/projects", (_req: Request, res: Response) => {
+  res.json({ items: PROJECTS, totalCount: PROJECTS.length, _links: {} });
+});
+
+app.get("/api/v2/projects/:projectKey/environments", (req: Request, res: Response) => {
+  const items = ENVIRONMENTS.map((e) => ({ ...e, _id: `env-${e.key}`, tags: [] }));
+  console.log(`Project: ${req.params.projectKey}, returning ${items.length} environments`);
+  res.json({ items, totalCount: items.length, _links: {} });
+});
+
+app.get("/api/v2/flag-status/:projectKey/:flagKey", (req: Request, res: Response) => {
+  const { flagKey } = req.params;
+  const found = MOCK_FLAGS.find((f) => f.key === flagKey);
+  if (!found) {
+    res.status(404).json({ code: "not_found", message: "Flag not found" });
+    return;
+  }
+  const names = ["active", "inactive", "new", "launched"];
+  const environments = ENV_KEYS.reduce((acc, envKey, i) => {
+    const name = names[(flagKey.length + i) % names.length];
+    acc[envKey] = {
+      name,
+      lastRequested: name === "new" ? undefined : new Date(Date.now() - (i + 1) * 3600_000 * 5).toISOString(),
+      default: false,
+    };
+    return acc;
+  }, {} as Record<string, any>);
+  res.json({ key: flagKey, environments, _links: {} });
+});
+
+app.get("/api/v2/tags", (req: Request, res: Response) => {
+  const tags = [...new Set(MOCK_FLAGS.flatMap((f) => f.tags))].sort();
+  console.log(`Tags kind=${req.query.kind}: ${tags.length}`);
+  res.json({ items: tags, totalCount: tags.length, _links: {} });
+});
+
+app.get("/api/v2/segments/:projectKey/:environmentKey", (_req: Request, res: Response) => {
+  res.json({ items: SEGMENTS, totalCount: SEGMENTS.length, _links: {} });
+});
+
+app.get("/api/v2/members/me", (_req: Request, res: Response) => {
+  res.json(ME);
+});
+
+const AUDIT_VERBS = [
+  "turned on the flag",
+  "turned off the flag",
+  "changed the fallthrough variation for the flag",
+  "added a rule to the flag",
+  "updated the description of the flag",
+];
+
+const AUDIT_LOG = Array.from({ length: 65 }, (_, i) => {
+  const flag = MOCK_FLAGS[i % MOCK_FLAGS.length];
+  const envKey = ENV_KEYS[i % ENV_KEYS.length];
+  const verb = AUDIT_VERBS[i % AUDIT_VERBS.length];
+  const member = i % 4 === 0 ? ME : { _id: `m-${i}`, firstName: "Auditor", lastName: `#${i}`, email: `auditor${i}@example.com` };
+  return {
+    _id: `audit-${i}`,
+    _accountId: "acct",
+    date: Date.now() - i * 37 * 60_000,
+    kind: "flag",
+    name: flag.name,
+    title: `${member.firstName} ${member.lastName} ${verb} [${flag.name}](/flags/${flag.key}) in \`${envName(envKey)}\``,
+    titleVerb: verb,
+    description: `${verb} **${flag.name}** in ${envName(envKey)}.\n\n- before: \`false\`\n- after: \`true\``,
+    shortDescription: "",
+    comment: i % 3 === 0 ? "Rolling out to the beta cohort first." : "",
+    member,
+    target: {
+      name: flag.name,
+      resources: [`proj/default:env/${envKey}:flag/${flag.key}`],
+    },
+    parent: { name: "Default Project", resource: "proj/default" },
+  };
+});
+
+app.get("/api/v2/auditlog", (req: Request, res: Response) => {
+  const limit = Math.min(parseInt(String(req.query.limit ?? "10"), 10) || 10, 20);
+  const before = req.query.before ? parseInt(String(req.query.before), 10) : undefined;
+  const spec = String(req.query.spec ?? "");
+  const flagMatch = /:flag\/([^:]+)/.exec(spec);
+  const envMatch = /:env\/([^:]+)/.exec(spec);
+
+  let entries = AUDIT_LOG;
+  if (flagMatch && flagMatch[1] !== "*") entries = entries.filter((e) => e.target.resources[0].endsWith(`:flag/${flagMatch[1]}`));
+  if (envMatch && envMatch[1] !== "*") entries = entries.filter((e) => e.target.resources[0].includes(`:env/${envMatch[1]}:`));
+  if (before) entries = entries.filter((e) => e.date < before);
+
+  res.json({ items: entries.slice(0, limit), _links: {} });
 });
 
 app.get("/api/v2/flags/:projectKey/:flagKey", (req: Request, res: Response) => {
