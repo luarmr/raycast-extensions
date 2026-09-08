@@ -22,7 +22,13 @@ const SEGMENTS = [
   { key: "internal-staff", name: "Internal Staff", description: "Employees" },
 ];
 
-const ME = { _id: "member-me", firstName: "Mocky", lastName: "McMockFace-1", email: "mocky1@example.com", role: "reader" };
+const ME = {
+  _id: "member-me",
+  firstName: "Mocky",
+  lastName: "McMockFace-1",
+  email: "mocky1@example.com",
+  role: "reader",
+};
 
 const POSSIBLE_VARIATIONS = [
   { value: true, name: "Enabled" },
@@ -59,26 +65,29 @@ function createMockFlag(index: number) {
       offVariation: 1,
     },
     version: index,
-    environments: ENV_KEYS.reduce((acc, envKey) => {
-      const isOn = index % 3 !== 0;
-      const offVariation = 1;
-      acc[envKey] = {
-        _environmentName: envName(envKey),
-        on: isOn,
-        archived: false,
-        salt: "random_salt",
-        sel: "random_sel",
-        lastModified: Date.now() - index * 5000,
-        version: index,
-        targets: [],
-        rules: [],
-        fallthrough: { variation: isOn ? 0 : offVariation },
-        offVariation,
-        prerequisites: [],
-        variations: POSSIBLE_VARIATIONS,
-      };
-      return acc;
-    }, {} as Record<string, any>),
+    environments: ENV_KEYS.reduce(
+      (acc, envKey) => {
+        const isOn = index % 3 !== 0;
+        const offVariation = 1;
+        acc[envKey] = {
+          _environmentName: envName(envKey),
+          on: isOn,
+          archived: false,
+          salt: "random_salt",
+          sel: "random_sel",
+          lastModified: Date.now() - index * 5000,
+          version: index,
+          targets: [],
+          rules: [],
+          fallthrough: { variation: isOn ? 0 : offVariation },
+          offVariation,
+          prerequisites: [],
+          variations: POSSIBLE_VARIATIONS,
+        };
+        return acc;
+      },
+      {} as Record<string, any>,
+    ),
   };
 }
 
@@ -263,9 +272,7 @@ const allPositiveRulesFlag = {
       rules: [],
       fallthrough: { variation: 2 },
       offVariation: 1,
-      prerequisites: [
-        { key: "test-deprecated", variation: 0 },
-      ],
+      prerequisites: [{ key: "test-deprecated", variation: 0 }],
       variations: POSSIBLE_VARIATIONS,
     },
   },
@@ -296,23 +303,26 @@ const TEST_FLAGS = [
     },
     defaults: { onVariation: 0, offVariation: 1 },
     version: 1001,
-    environments: ENV_KEYS.reduce((acc, envKey) => {
-      acc[envKey] = {
-        on: false,
-        archived: true,
-        salt: "random_salt",
-        sel: "random_sel",
-        lastModified: Date.now() - 9999,
-        version: 1001,
-        targets: [],
-        rules: [],
-        fallthrough: { variation: 0 },
-        offVariation: 1,
-        prerequisites: [],
-        variations: POSSIBLE_VARIATIONS,
-      };
-      return acc;
-    }, {} as Record<string, any>),
+    environments: ENV_KEYS.reduce(
+      (acc, envKey) => {
+        acc[envKey] = {
+          on: false,
+          archived: true,
+          salt: "random_salt",
+          sel: "random_sel",
+          lastModified: Date.now() - 9999,
+          version: 1001,
+          targets: [],
+          rules: [],
+          fallthrough: { variation: 0 },
+          offVariation: 1,
+          prerequisites: [],
+          variations: POSSIBLE_VARIATIONS,
+        };
+        return acc;
+      },
+      {} as Record<string, any>,
+    ),
   },
   {
     key: "test-deprecated",
@@ -337,23 +347,26 @@ const TEST_FLAGS = [
     },
     defaults: { onVariation: 0, offVariation: 1 },
     version: 1002,
-    environments: ENV_KEYS.reduce((acc, envKey) => {
-      acc[envKey] = {
-        on: true,
-        archived: false,
-        salt: "random_salt",
-        sel: "random_sel",
-        lastModified: Date.now() - 8888,
-        version: 1002,
-        targets: [],
-        rules: [],
-        fallthrough: { variation: 0 },
-        offVariation: 1,
-        prerequisites: [],
-        variations: POSSIBLE_VARIATIONS,
-      };
-      return acc;
-    }, {} as Record<string, any>),
+    environments: ENV_KEYS.reduce(
+      (acc, envKey) => {
+        acc[envKey] = {
+          on: true,
+          archived: false,
+          salt: "random_salt",
+          sel: "random_sel",
+          lastModified: Date.now() - 8888,
+          version: 1002,
+          targets: [],
+          rules: [],
+          fallthrough: { variation: 0 },
+          offVariation: 1,
+          prerequisites: [],
+          variations: POSSIBLE_VARIATIONS,
+        };
+        return acc;
+      },
+      {} as Record<string, any>,
+    ),
   },
   {
     key: "test-temporary",
@@ -378,23 +391,26 @@ const TEST_FLAGS = [
     },
     defaults: { onVariation: 0, offVariation: 1 },
     version: 1003,
-    environments: ENV_KEYS.reduce((acc, envKey) => {
-      acc[envKey] = {
-        on: true,
-        archived: false,
-        salt: "random_salt",
-        sel: "random_sel",
-        lastModified: Date.now() - 7777,
-        version: 1003,
-        targets: [],
-        rules: [],
-        fallthrough: { variation: 0 },
-        offVariation: 1,
-        prerequisites: [],
-        variations: POSSIBLE_VARIATIONS,
-      };
-      return acc;
-    }, {} as Record<string, any>),
+    environments: ENV_KEYS.reduce(
+      (acc, envKey) => {
+        acc[envKey] = {
+          on: true,
+          archived: false,
+          salt: "random_salt",
+          sel: "random_sel",
+          lastModified: Date.now() - 7777,
+          version: 1003,
+          targets: [],
+          rules: [],
+          fallthrough: { variation: 0 },
+          offVariation: 1,
+          prerequisites: [],
+          variations: POSSIBLE_VARIATIONS,
+        };
+        return acc;
+      },
+      {} as Record<string, any>,
+    ),
   },
   {
     key: "test-complex-targeting",
@@ -419,31 +435,32 @@ const TEST_FLAGS = [
     },
     defaults: { onVariation: 0, offVariation: 1 },
     version: 1004,
-    environments: ENV_KEYS.reduce((acc, envKey) => {
-      acc[envKey] = {
-        on: true,
-        archived: false,
-        salt: "random_salt",
-        sel: "random_sel",
-        lastModified: Date.now() - 6666,
-        version: 1004,
-        targets: [],
-        rules: [
-          {
-            variation: 2,
-            clauses: [
-              { attribute: "email", op: "in", values: ["test@example.com"], negate: false },
-            ],
-            rollout: null,
-          },
-        ],
-        fallthrough: { variation: 0 },
-        offVariation: 1,
-        prerequisites: [],
-        variations: POSSIBLE_VARIATIONS,
-      };
-      return acc;
-    }, {} as Record<string, any>),
+    environments: ENV_KEYS.reduce(
+      (acc, envKey) => {
+        acc[envKey] = {
+          on: true,
+          archived: false,
+          salt: "random_salt",
+          sel: "random_sel",
+          lastModified: Date.now() - 6666,
+          version: 1004,
+          targets: [],
+          rules: [
+            {
+              variation: 2,
+              clauses: [{ attribute: "email", op: "in", values: ["test@example.com"], negate: false }],
+              rollout: null,
+            },
+          ],
+          fallthrough: { variation: 0 },
+          offVariation: 1,
+          prerequisites: [],
+          variations: POSSIBLE_VARIATIONS,
+        };
+        return acc;
+      },
+      {} as Record<string, any>,
+    ),
   },
   {
     key: "test-multi-variation",
@@ -468,34 +485,37 @@ const TEST_FLAGS = [
     },
     defaults: { onVariation: 0, offVariation: 1 },
     version: 1005,
-    environments: ENV_KEYS.reduce((acc, envKey) => {
-      acc[envKey] = {
-        on: true,
-        archived: false,
-        salt: "random_salt",
-        sel: "random_sel",
-        lastModified: Date.now() - 5555,
-        version: 1005,
-        targets: [],
-        rules: [
-          {
-            variation: undefined,
-            clauses: [{ attribute: "country", op: "in", values: ["US"], negate: false }],
-            rollout: {
-              variations: [
-                { variation: 0, weight: 50000 },
-                { variation: 2, weight: 50000 },
-              ],
+    environments: ENV_KEYS.reduce(
+      (acc, envKey) => {
+        acc[envKey] = {
+          on: true,
+          archived: false,
+          salt: "random_salt",
+          sel: "random_sel",
+          lastModified: Date.now() - 5555,
+          version: 1005,
+          targets: [],
+          rules: [
+            {
+              variation: undefined,
+              clauses: [{ attribute: "country", op: "in", values: ["US"], negate: false }],
+              rollout: {
+                variations: [
+                  { variation: 0, weight: 50000 },
+                  { variation: 2, weight: 50000 },
+                ],
+              },
             },
-          },
-        ],
-        fallthrough: { variation: 0 },
-        offVariation: 1,
-        prerequisites: [],
-        variations: POSSIBLE_VARIATIONS,
-      };
-      return acc;
-    }, {} as Record<string, any>),
+          ],
+          fallthrough: { variation: 0 },
+          offVariation: 1,
+          prerequisites: [],
+          variations: POSSIBLE_VARIATIONS,
+        };
+        return acc;
+      },
+      {} as Record<string, any>,
+    ),
   },
   {
     key: "test-target-scenario",
@@ -520,25 +540,26 @@ const TEST_FLAGS = [
     },
     defaults: { onVariation: 0, offVariation: 1 },
     version: 1006,
-    environments: ENV_KEYS.reduce((acc, envKey) => {
-      acc[envKey] = {
-        on: true,
-        archived: false,
-        salt: "random_salt",
-        sel: "random_sel",
-        lastModified: Date.now() - 4444,
-        version: 1006,
-        targets: [
-          { values: ["special-user-1", "special-user-2"], variation: 2 },
-        ],
-        rules: [],
-        fallthrough: { variation: 0 },
-        offVariation: 1,
-        prerequisites: [],
-        variations: POSSIBLE_VARIATIONS,
-      };
-      return acc;
-    }, {} as Record<string, any>),
+    environments: ENV_KEYS.reduce(
+      (acc, envKey) => {
+        acc[envKey] = {
+          on: true,
+          archived: false,
+          salt: "random_salt",
+          sel: "random_sel",
+          lastModified: Date.now() - 4444,
+          version: 1006,
+          targets: [{ values: ["special-user-1", "special-user-2"], variation: 2 }],
+          rules: [],
+          fallthrough: { variation: 0 },
+          offVariation: 1,
+          prerequisites: [],
+          variations: POSSIBLE_VARIATIONS,
+        };
+        return acc;
+      },
+      {} as Record<string, any>,
+    ),
   },
   {
     key: "test-rollout-split",
@@ -563,37 +584,38 @@ const TEST_FLAGS = [
     },
     defaults: { onVariation: 0, offVariation: 1 },
     version: 1007,
-    environments: ENV_KEYS.reduce((acc, envKey) => {
-      acc[envKey] = {
-        on: true,
-        archived: false,
-        salt: "random_salt",
-        sel: "random_sel",
-        lastModified: Date.now() - 3333,
-        version: 1007,
-        targets: [],
-        rules: [
-          {
-            variation: undefined,
-            clauses: [
-              { attribute: "email", op: "contains", values: ["@rollout.com"], negate: false },
-            ],
-            rollout: {
-              variations: [
-                { variation: 0, weight: 25000 },
-                { variation: 1, weight: 25000 },
-                { variation: 3, weight: 50000 },
-              ],
+    environments: ENV_KEYS.reduce(
+      (acc, envKey) => {
+        acc[envKey] = {
+          on: true,
+          archived: false,
+          salt: "random_salt",
+          sel: "random_sel",
+          lastModified: Date.now() - 3333,
+          version: 1007,
+          targets: [],
+          rules: [
+            {
+              variation: undefined,
+              clauses: [{ attribute: "email", op: "contains", values: ["@rollout.com"], negate: false }],
+              rollout: {
+                variations: [
+                  { variation: 0, weight: 25000 },
+                  { variation: 1, weight: 25000 },
+                  { variation: 3, weight: 50000 },
+                ],
+              },
             },
-          },
-        ],
-        fallthrough: { variation: 0 },
-        offVariation: 1,
-        prerequisites: [],
-        variations: POSSIBLE_VARIATIONS,
-      };
-      return acc;
-    }, {} as Record<string, any>),
+          ],
+          fallthrough: { variation: 0 },
+          offVariation: 1,
+          prerequisites: [],
+          variations: POSSIBLE_VARIATIONS,
+        };
+        return acc;
+      },
+      {} as Record<string, any>,
+    ),
   },
   {
     key: "test-env-disabled",
@@ -618,24 +640,27 @@ const TEST_FLAGS = [
     },
     defaults: { onVariation: 0, offVariation: 1 },
     version: 1008,
-    environments: ENV_KEYS.reduce((acc, envKey) => {
-      const isOn = envKey === "production" ? false : true;
-      acc[envKey] = {
-        on: isOn,
-        archived: false,
-        salt: "random_salt",
-        sel: "random_sel",
-        lastModified: Date.now() - 2222,
-        version: 1008,
-        targets: [],
-        rules: [],
-        fallthrough: { variation: isOn ? 0 : 1 },
-        offVariation: 1,
-        prerequisites: [],
-        variations: POSSIBLE_VARIATIONS,
-      };
-      return acc;
-    }, {} as Record<string, any>),
+    environments: ENV_KEYS.reduce(
+      (acc, envKey) => {
+        const isOn = envKey === "production" ? false : true;
+        acc[envKey] = {
+          on: isOn,
+          archived: false,
+          salt: "random_salt",
+          sel: "random_sel",
+          lastModified: Date.now() - 2222,
+          version: 1008,
+          targets: [],
+          rules: [],
+          fallthrough: { variation: isOn ? 0 : 1 },
+          offVariation: 1,
+          prerequisites: [],
+          variations: POSSIBLE_VARIATIONS,
+        };
+        return acc;
+      },
+      {} as Record<string, any>,
+    ),
   },
 ];
 
@@ -657,20 +682,34 @@ app.use((req: Request, res: Response, next) => {
   next();
 });
 
+/** Unknown project keys 404 like the real API so the extension's error state can be exercised. */
+function requireProject(req: Request, res: Response): boolean {
+  const projectKey = String(req.params.projectKey);
+  if (PROJECTS.some((p) => p.key === projectKey)) return true;
+  res.status(404).json({ code: "not_found", message: `Project "${projectKey}" not found` });
+  return false;
+}
+
+/** Each mock project sees a different slice of the flags so switching projects is visible. */
+function flagsForProject(projectKey: string) {
+  const index = PROJECTS.findIndex((p) => p.key === projectKey);
+  if (index <= 0) return MOCK_FLAGS;
+  return MOCK_FLAGS.filter((_, i) => i % PROJECTS.length === index);
+}
+
 app.get("/api/v2/flags/:projectKey", (req: Request, res: Response) => {
+  if (!requireProject(req, res)) return;
   const { limit = "20", offset = "0", filter } = req.query;
   const intLimit = parseInt(limit as string, 10) || 20;
   const intOffset = parseInt(offset as string, 10) || 0;
 
-  let filteredFlags = [...MOCK_FLAGS];
+  let filteredFlags = flagsForProject(String(req.params.projectKey));
 
   if (filter) {
     const filterStr = filter.toString().toLowerCase();
     if (filterStr.includes("query:")) {
       const queryText = filterStr.split("query:")[1].split(",")[0].trim();
-      filteredFlags = filteredFlags.filter((f) =>
-        f.name.toLowerCase().includes(queryText)
-      );
+      filteredFlags = filteredFlags.filter((f) => f.name.toLowerCase().includes(queryText));
     }
     if (filterStr.includes("state:archived")) {
       filteredFlags = filteredFlags.filter((f) => f.archived);
@@ -679,7 +718,7 @@ app.get("/api/v2/flags/:projectKey", (req: Request, res: Response) => {
     } else if (filterStr.includes("state:live")) {
       filteredFlags = filteredFlags.filter((f) => !f.archived && !f.deprecated);
     }
-    
+
     if (filterStr.includes("type:temporary")) {
       filteredFlags = filteredFlags.filter((f) => f.temporary);
     } else if (filterStr.includes("type:permanent")) {
@@ -727,6 +766,7 @@ app.get("/api/v2/projects", (_req: Request, res: Response) => {
 });
 
 app.get("/api/v2/projects/:projectKey/environments", (req: Request, res: Response) => {
+  if (!requireProject(req, res)) return;
   const items = ENVIRONMENTS.map((e) => ({ ...e, _id: `env-${e.key}`, tags: [] }));
   console.log(`Project: ${req.params.projectKey}, returning ${items.length} environments`);
   res.json({ items, totalCount: items.length, _links: {} });
@@ -740,15 +780,18 @@ app.get("/api/v2/flag-status/:projectKey/:flagKey", (req: Request, res: Response
     return;
   }
   const names = ["active", "inactive", "new", "launched"];
-  const environments = ENV_KEYS.reduce((acc, envKey, i) => {
-    const name = names[(flagKey.length + i) % names.length];
-    acc[envKey] = {
-      name,
-      lastRequested: name === "new" ? undefined : new Date(Date.now() - (i + 1) * 3600_000 * 5).toISOString(),
-      default: false,
-    };
-    return acc;
-  }, {} as Record<string, any>);
+  const environments = ENV_KEYS.reduce(
+    (acc, envKey, i) => {
+      const name = names[(flagKey.length + i) % names.length];
+      acc[envKey] = {
+        name,
+        lastRequested: name === "new" ? undefined : new Date(Date.now() - (i + 1) * 3600_000 * 5).toISOString(),
+        default: false,
+      };
+      return acc;
+    },
+    {} as Record<string, any>,
+  );
   res.json({ key: flagKey, environments, _links: {} });
 });
 
@@ -778,7 +821,8 @@ const AUDIT_LOG = Array.from({ length: 65 }, (_, i) => {
   const flag = MOCK_FLAGS[i % MOCK_FLAGS.length];
   const envKey = ENV_KEYS[i % ENV_KEYS.length];
   const verb = AUDIT_VERBS[i % AUDIT_VERBS.length];
-  const member = i % 4 === 0 ? ME : { _id: `m-${i}`, firstName: "Auditor", lastName: `#${i}`, email: `auditor${i}@example.com` };
+  const member =
+    i % 4 === 0 ? ME : { _id: `m-${i}`, firstName: "Auditor", lastName: `#${i}`, email: `auditor${i}@example.com` };
   return {
     _id: `audit-${i}`,
     _accountId: "acct",
@@ -803,31 +847,56 @@ app.get("/api/v2/auditlog", (req: Request, res: Response) => {
   const limit = Math.min(parseInt(String(req.query.limit ?? "10"), 10) || 10, 20);
   const before = req.query.before ? parseInt(String(req.query.before), 10) : undefined;
   const spec = String(req.query.spec ?? "");
+  const projMatch = /^proj\/([^:]+)/.exec(spec);
   const flagMatch = /:flag\/([^:]+)/.exec(spec);
   const envMatch = /:env\/([^:]+)/.exec(spec);
 
-  let entries = AUDIT_LOG;
-  if (flagMatch && flagMatch[1] !== "*") entries = entries.filter((e) => e.target.resources[0].endsWith(`:flag/${flagMatch[1]}`));
-  if (envMatch && envMatch[1] !== "*") entries = entries.filter((e) => e.target.resources[0].includes(`:env/${envMatch[1]}:`));
+  const projectKey = projMatch?.[1] ?? "default";
+  const projectFlagKeys = new Set(flagsForProject(projectKey).map((f) => f.key));
+  let entries = AUDIT_LOG.filter((e) => projectFlagKeys.has(e.target.resources[0].split(":flag/")[1]));
+  if (flagMatch && flagMatch[1] !== "*")
+    entries = entries.filter((e) => e.target.resources[0].endsWith(`:flag/${flagMatch[1]}`));
+  if (envMatch && envMatch[1] !== "*")
+    entries = entries.filter((e) => e.target.resources[0].includes(`:env/${envMatch[1]}:`));
   if (before) entries = entries.filter((e) => e.date < before);
 
   res.json({ items: entries.slice(0, limit), _links: {} });
 });
 
 app.get("/api/v2/flags/:projectKey/:flagKey", (req: Request, res: Response) => {
+  if (!requireProject(req, res)) return;
   const { projectKey, flagKey } = req.params;
-  const found = MOCK_FLAGS.find((f) => f.key === flagKey);
+  const found = flagsForProject(String(projectKey)).find((f) => f.key === flagKey);
   if (!found) {
-    res.status(404).json({ error: "Flag not found" });
+    res.status(404).json({ code: "not_found", message: "Flag not found" });
     return;
   }
   console.log(`Project: ${projectKey}, returning single flag: ${found.key}`);
   res.json(found);
 });
 
+// Browser pages the extension deep-links to; plain HTML echoing the parameters.
+function mockPage(title: string, rows: Record<string, string | undefined>): string {
+  const items = Object.entries(rows)
+    .map(([k, v]) => `<p><strong>${k}:</strong> ${v || "(none)"}</p>`)
+    .join("\n  ");
+  return `<!DOCTYPE html><html><head><meta charset="utf-8"><title>${title}</title></head>
+<body><h1>${title}</h1>
+  ${items}
+  <hr><p><em>This is a mock LaunchDarkly page.</em></p></body></html>`;
+}
+
+app.get("/projects/:projectKey/flags", (req: Request, res: Response) => {
+  res.send(mockPage("Mock LaunchDarkly Project Flags", { "Project Key": String(req.params.projectKey) }));
+});
+
+app.get("/settings/history", (req: Request, res: Response) => {
+  res.send(mockPage("Mock LaunchDarkly History", { spec: String(req.query.spec ?? "") }));
+});
+
 app.get("/projects/:projectKey/flags/:flagKey/targeting", (req: Request, res: Response) => {
   const { projectKey, flagKey } = req.params;
-  const envParam = req.query.env; 
+  const envParam = req.query.env;
   let envs: string[] = [];
   if (typeof envParam === "string") {
     envs = [envParam];
