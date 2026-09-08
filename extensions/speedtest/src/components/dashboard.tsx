@@ -1,5 +1,11 @@
-import { Action, ActionPanel, Color, Detail, Icon, Keyboard } from "@raycast/api";
-import { ClearCacheAction, CopySpeedtestResultAction, CopySummaryAction, RestartAction } from "../lib/actions";
+import { Action, ActionPanel, Color, Detail, Icon } from "@raycast/api";
+import {
+  ClearCacheAction,
+  CopySpeedtestResultAction,
+  CopySummaryAction,
+  MeterImageActions,
+  RestartAction,
+} from "../lib/actions";
 import { DASHBOARD_W, TestPhase, dashboardSvg } from "../lib/charts";
 import { ResultProgress, SpeedSamples, SpeedtestResult } from "../lib/speedtest.types";
 import { mdImg } from "../lib/svg";
@@ -135,12 +141,7 @@ export function SpeedtestDashboard(props: SpeedtestDashboardProps) {
           <ActionPanel.Section>
             <CopySummaryAction result={result} />
             <CopySpeedtestResultAction result={result} />
-            <Action.CopyToClipboard
-              title="Copy Meter Image"
-              icon={Icon.Image}
-              content={image}
-              shortcut={Keyboard.Shortcut.Common.Duplicate}
-            />
+            <MeterImageActions markup={image} />
           </ActionPanel.Section>
           <ActionPanel.Section>
             <ClearCacheAction isLoading={isLoading} />

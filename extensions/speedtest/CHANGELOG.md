@@ -7,7 +7,7 @@
 - All ISP, server, ping, download, upload, quality and result data is shown in the sidebar next to the meter.
 - The previous list view is still available via "Show Detailed List" (⌘L), with per-item charts (gauge, sparkline, latency range, summary) above the existing metadata and progress-ring icons while a phase runs. The command remembers which of the two views you used last and opens in it next time.
 - Charts follow Raycast's light/dark appearance and use the accent colors of the built-in Raycast themes, so they match the native tags in the sidebar.
-- Added "Copy Meter Image" (the meter as SVG markup).
+- Added "Copy Meter Image", "Paste Meter Image" and "Save Meter Image to Downloads" (macOS): the meter is rendered to a PNG with the system's QuickLook, no extra dependencies, ready to drop into Slack, Notes or a document.
 - Fixed the CLI being launched twice per run (duplicate effect run never killed the first process), which doubled the requests counted against Ookla's rate limit. Restart now also clears a previous error.
 - Failures keep the original error window and now show the CLI's actual reason (e.g. Ookla's rate limit) instead of a generic message.
 - Fixed a crash while a test is running caused by live CLI events that omit latency fields.

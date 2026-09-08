@@ -1,6 +1,7 @@
 import { Action, Alert, Icon, Keyboard, Toast, confirmAlert, showToast } from "@raycast/api";
 import * as afs from "fs/promises";
 import { speedtestCLIDirectory } from "../lib/cli";
+import { ShareMode, canShareMeterImage, shareMeterImage } from "./meter-image";
 import { ClipboardData, SpeedtestResult } from "./speedtest.types";
 import { pingToString, speedToString } from "./utils";
 
@@ -91,6 +92,54 @@ export function CopySpeedtestResultAction({ result }: { result: ClipboardData })
       content={JSON.stringify(result)}
       shortcut={Keyboard.Shortcut.Common.CopyName}
     />
+  );
+}
+
+/**
+ * Copy / paste / save the meter as a PNG. Rendering uses macOS's QuickLook, so the
+ * actions are only offered on macOS (see `canShareMeterImage`).
+ */
+export function MeterImageActions({ markup }: { markup: string }) {
+  if (!canShareMeterImage) {
+    return null;
+  }
+  const share = async (mode: ShareMode) => {
+    const toast = await showToast({ style: Toast.Style.Animated, title: "Rendering meter image…" });
+    try {
+      await shareMeterImage(markup, mode);
+    } catch (error) {
+      toast.style = Toast.Style.Failure;
+      toast.title = "Could not export the meter";
+      toast.message = error instanceof Error ? error.message : String(error);
+    }
+  };
+  return (
+    <>
+      <Action
+        title="Copy Meter Image"
+        icon={Icon.Image}
+        shortcut={Keyboard.Shortcut.Common.Duplicate}
+        onAction={() => share("copy")}
+      />
+      <Action
+        title="Paste Meter Image"
+        icon={Icon.Clipboard}
+        shortcut={{
+          macOS: { modifiers: ["cmd", "shift"], key: "v" },
+          Windows: { modifiers: ["ctrl", "shift"], key: "v" },
+        }}
+        onAction={() => share("paste")}
+      />
+      <Action
+        title="Save Meter Image to Downloads"
+        icon={Icon.Download}
+        shortcut={{
+          macOS: { modifiers: ["cmd", "shift"], key: "d" },
+          Windows: { modifiers: ["ctrl", "shift"], key: "d" },
+        }}
+        onAction={() => share("save")}
+      />
+    </>
   );
 }
 
