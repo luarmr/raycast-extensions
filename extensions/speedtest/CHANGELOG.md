@@ -1,6 +1,6 @@
 # Speedtest Changelog
 
-## [Live Speed Meter] - {PR_MERGE_DATE}
+## [Live Speed Meter] - 2026-09-09
 
 - The command now opens on a live speed meter: download and upload speedometers side by side (the running one animates, the other waits), bandwidth-over-time charts and a ping → download → upload phase strip, all rebuilt from generated SVG on every progress event.
 - Once finished, both meters keep their final value together with their sample history.
