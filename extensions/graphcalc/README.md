@@ -21,9 +21,9 @@ A simple Raycast graphing calculator extension.
     - **Zoom In/Out**: Explore details or view the overall graph.
     - **Pan Left/Right/Up/Down**: Navigate to different regions of the graph.
     - **Reset View**: Quickly reset the graph to default settings.
-  - **Theme Customization**
-    - Change graph line color with multiple theme options.
-    - Choose from colors like Blue, Green, Magenta, Orange, Purple, Red, and Yellow.
+  - **Themes**
+    - The graph draws its own card, so it stays legible on any Raycast theme.
+    - Choose from System (follows light/dark), Paper, Noir, Terminal, Blueprint and Synthwave.
 
 - **Equation/Expression History**
   - Keeps track of previously entered equations and expressions for easy access.
@@ -48,9 +48,13 @@ A simple Raycast graphing calculator extension.
   - Reset the graph to its initial view settings.
   - **Shortcut**: `Cmd` + `Shift` + `.`
 
-- **Change Theme Color**
-  - Cycle through different line colors to customize the graph's appearance.
-  - **Shortcut**: `Cmd` + `Shift` + `;`
+- **Themes**
+  - Pick a theme from the `Switch Theme` submenu, or cycle with `Next Theme`.
+  - **Shortcuts**: Switch Theme `Cmd` + `T`, Next Theme `Cmd` + `Shift` + `;`
+
+- **Share**
+  - Copy, paste or save the current graph as a high-resolution PNG (macOS), or copy it as SVG (macOS and Windows).
+  - **Shortcuts**: Copy Image `Cmd` + `Shift` + `C`, Paste Image `Cmd` + `Shift` + `V`, Save Image to Downloads `Cmd` + `Shift` + `S`
 
 
 ## Screenshots

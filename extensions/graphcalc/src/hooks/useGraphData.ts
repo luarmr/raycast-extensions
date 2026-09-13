@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { evaluate } from "mathjs";
-import { showToast, Toast, Color, LocalStorage } from "@raycast/api";
+import { showToast, Toast } from "@raycast/api";
 import { showFailureToast } from "@raycast/utils";
 import {
   parseExpression,
@@ -8,16 +8,12 @@ import {
   processDataIntoSegments,
 } from "../utils/mathUtils";
 
-import { ThemeColorName } from "../types";
-
 import {
-  THEME_COLORS,
   NUM_POINTS,
   INITIAL_X_MIN,
   INITIAL_X_MAX,
   INITIAL_Y_MIN,
   INITIAL_Y_MAX,
-  DEFAULT_LINE_COLOR,
 } from "../constants";
 
 export function useGraphData(expression: string) {
@@ -26,7 +22,6 @@ export function useGraphData(expression: string) {
   >([]);
   const [result, setResult] = useState<string | null>(null);
   const [svgRendered, setSvgRendered] = useState<boolean>(false);
-  const [lineColor, setLineColor] = useState<string>(DEFAULT_LINE_COLOR);
   const [error, setError] = useState<string | null>(null);
   const toastRef = useRef<Toast | null>(null);
 
@@ -37,18 +32,6 @@ export function useGraphData(expression: string) {
 
   const [initialYMin, setInitialYMin] = useState<number>(INITIAL_Y_MIN);
   const [initialYMax, setInitialYMax] = useState<number>(INITIAL_Y_MAX);
-
-  useEffect(() => {
-    const loadLineColor = async () => {
-      const savedColor = await LocalStorage.getItem<string>("lineColor");
-      if (savedColor && THEME_COLORS.includes(savedColor as ThemeColorName)) {
-        setLineColor(Color[savedColor as ThemeColorName]);
-      } else {
-        setLineColor(DEFAULT_LINE_COLOR);
-      }
-    };
-    loadLineColor();
-  }, []);
 
   useEffect(() => {
     const isSimpleEquation =
@@ -185,7 +168,6 @@ export function useGraphData(expression: string) {
     dataSegments,
     result,
     svgRendered,
-    lineColor,
     error,
     xMin,
     xMax,
@@ -195,7 +177,6 @@ export function useGraphData(expression: string) {
     setXMax,
     setYMin,
     setYMax,
-    setLineColor,
     initialXMin: INITIAL_X_MIN,
     initialXMax: INITIAL_X_MAX,
     initialYMin,
