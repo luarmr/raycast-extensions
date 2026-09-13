@@ -135,8 +135,10 @@ export function renderGraphToSVG(
 
         const pathData = segment
           .map((point, index) => {
-            const x = scaleX(point.x);
-            const y = scaleY(point.y);
+            // Two decimals in an 800-unit card is sub-pixel even at 2x export
+            // and roughly halves the SVG (which is embedded base64 in markdown).
+            const x = scaleX(point.x).toFixed(2);
+            const y = scaleY(point.y).toFixed(2);
             return `${index === 0 ? "M" : "L"} ${x} ${y}`;
           })
           .join(" ");

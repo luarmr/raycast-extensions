@@ -57,6 +57,18 @@ A simple Raycast graphing calculator extension.
   - **Shortcuts**: Copy Image `Cmd` + `Shift` + `C`, Paste Image `Cmd` + `Shift` + `V`, Save Image to Downloads `Cmd` + `Shift` + `S`
 
 
+## Preferences
+
+### Plot Detail
+
+How many points are sampled along the x-axis for each plot. Options: **Standard** (1,000 points, default), **High** (3,000), **Very High** (6,000) and **Maximum** (12,000). Change it in Raycast → Extensions → GraphCalc.
+
+**When to raise it.** Only when a curve visibly misbehaves after zooming far out: fast oscillations look jagged or aliased (`sin(x^2)`, `x * sin(5x)` at wide ranges), or steep sections appear as dashes and gaps because consecutive samples are too far apart. Zoom in first, since that fixes it for free; use a higher detail level only when you need the wide view.
+
+**What it costs.** Every zoom and pan re-evaluates the expression at every point and rebuilds the graph image, which is embedded in the view as data, so the image size grows in proportion to the point count (roughly 30 KB at Standard, 250 KB at Maximum). Higher settings make navigation noticeably less responsive, especially on slower machines and for heavy expressions, and produce larger `Copy SVG` output. Copy/Paste/Save Image are not affected in size: the PNG is fixed at 1600 pixels wide.
+
+**Why Standard is the default.** The graph is 800 units wide and the plot area about 700, so 1,000 samples already exceed what can be displayed: more points cannot make a normal curve look better on screen, they only help in the extreme zoom-out cases above. Making everyone pay the extra redraw cost for a case most people never hit would be a poor trade, so the default stays at the level that is visually lossless for ordinary use.
+
 ## Screenshots
 
 ![Screenshot1](./metadata/graphcalc-1.png)

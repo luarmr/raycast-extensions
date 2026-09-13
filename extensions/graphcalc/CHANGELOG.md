@@ -9,6 +9,8 @@
 - New Share actions: `Copy Image` (⌘⇧C), `Paste Image` (⌘⇧V) and `Save Image to Downloads` (⌘⇧S) export the graph card exactly as shown, at 2x resolution (1600×672 PNG), in the active theme (macOS only; rendered with QuickLook)
 - New `Copy SVG` action on macOS and Windows copies the same card as SVG markup
 - Saved files are named `graphcalc-<expression>-<date>.png` and never overwrite an existing file
+- New `Plot Detail` preference (Standard / High / Very High / Maximum) to sample more points for curves that look jagged or broken when zoomed far out; the default is unchanged
+- Faster plotting: the expression is now compiled once per redraw instead of re-parsed at every point, and path coordinates are rounded, roughly halving the size of the embedded graph
 
 ## [Fix missing graph line on Windows] - 2026-09-13
 
