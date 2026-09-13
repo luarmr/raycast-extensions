@@ -10,6 +10,7 @@
 - New `Copy SVG` action on macOS and Windows copies the same card as SVG markup
 - Saved files are named `graphcalc-<expression>-<date>.png` and never overwrite an existing file
 - New `Plot Detail` preference (Standard / High / Very High / Maximum) to sample more points for curves that look jagged or broken when zoomed far out; the default is unchanged
+- Fixed keyboard shortcuts on Windows: shortcuts declared with the macOS `cmd` modifier were silently dropped there, so panning, Reset View, Next Theme and Edit Expression had no shortcut. Windows now uses `Ctrl` `Alt` + arrows to pan, `Ctrl` `Shift` `R` to reset, `Ctrl` `Shift` `T` for Next Theme and `Ctrl` `T` / `Ctrl` `E` for Switch Theme / Edit Expression (Raycast for Windows reserves `Ctrl` `Shift` + arrows)
 - Faster plotting: the expression is now compiled once per redraw instead of re-parsed at every point, and path coordinates are rounded, roughly halving the size of the embedded graph
 
 ## [Fix missing graph line on Windows] - 2026-09-13

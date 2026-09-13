@@ -1,6 +1,7 @@
 import {
   ActionPanel,
   Action,
+  Keyboard,
   showToast,
   Toast,
   List,
@@ -148,7 +149,7 @@ export default function Command(
               <Action title="Clear History" onAction={handleClearHistory} />
               <Action
                 title="Edit Expression"
-                shortcut={{ modifiers: ["cmd"], key: "e" }}
+                shortcut={Keyboard.Shortcut.Common.Edit}
                 onAction={() => handleEditExpression(expr)}
               />
             </ActionPanel>

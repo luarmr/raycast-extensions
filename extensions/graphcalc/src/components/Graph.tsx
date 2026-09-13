@@ -23,6 +23,58 @@ import {
 } from "../lib/share";
 import { GraphProps } from "../types";
 
+type Keys = { modifiers: Keyboard.KeyModifier[]; key: Keyboard.KeyEquivalent };
+
+/**
+ * A shortcut declared for both platforms. Raycast ignores shortcuts with an
+ * ambiguous modifier (`cmd`, `ctrl`) on the other platform, so both variants
+ * are spelled out. When `windows` is omitted it mirrors `macOS` with ⌘→Ctrl.
+ *
+ * Some macOS shortcuts cannot map 1:1: Raycast for Windows reserves
+ * Ctrl+Shift+arrows (reorder favorites), Ctrl+Shift+↵, Ctrl+Shift+, and
+ * Ctrl+Shift+D and silently drops actions that claim them, and punctuation
+ * keys depend on the keyboard layout there. Those get an explicit Windows
+ * variant using letters or Ctrl+Alt.
+ */
+function shortcut(macOS: Keys, windows?: Keys): Keyboard.Shortcut {
+  const win = windows ?? {
+    key: macOS.key,
+    modifiers: macOS.modifiers.map((m) => (m === "cmd" ? "ctrl" : m)),
+  };
+  // Set under both `Windows` and the legacy lowercase key for older app builds.
+  return { macOS, Windows: win, windows: win };
+}
+
+const SHORTCUTS = {
+  moveUp: shortcut(
+    { modifiers: ["cmd", "shift"], key: "arrowUp" },
+    { modifiers: ["ctrl", "alt"], key: "arrowUp" },
+  ),
+  moveDown: shortcut(
+    { modifiers: ["cmd", "shift"], key: "arrowDown" },
+    { modifiers: ["ctrl", "alt"], key: "arrowDown" },
+  ),
+  moveLeft: shortcut(
+    { modifiers: ["cmd", "shift"], key: "arrowLeft" },
+    { modifiers: ["ctrl", "alt"], key: "arrowLeft" },
+  ),
+  moveRight: shortcut(
+    { modifiers: ["cmd", "shift"], key: "arrowRight" },
+    { modifiers: ["ctrl", "alt"], key: "arrowRight" },
+  ),
+  resetView: shortcut(
+    { modifiers: ["cmd", "shift"], key: "." },
+    { modifiers: ["ctrl", "shift"], key: "r" },
+  ),
+  nextTheme: shortcut(
+    { modifiers: ["cmd", "shift"], key: ";" },
+    { modifiers: ["ctrl", "shift"], key: "t" },
+  ),
+  switchTheme: shortcut({ modifiers: ["cmd"], key: "t" }),
+  pasteImage: shortcut({ modifiers: ["cmd", "shift"], key: "v" }),
+  saveImage: shortcut({ modifiers: ["cmd", "shift"], key: "s" }),
+};
+
 const Graph: React.FC<GraphProps> = ({ expression }) => {
   const {
     dataSegments,
@@ -112,27 +164,27 @@ const Graph: React.FC<GraphProps> = ({ expression }) => {
               <Action
                 title="Move up"
                 onAction={moveUp}
-                shortcut={{ modifiers: ["cmd", "shift"], key: "arrowUp" }}
+                shortcut={SHORTCUTS.moveUp}
               />
               <Action
                 title="Move Down"
                 onAction={moveDown}
-                shortcut={{ modifiers: ["cmd", "shift"], key: "arrowDown" }}
+                shortcut={SHORTCUTS.moveDown}
               />
               <Action
                 title="Move Left"
                 onAction={moveLeft}
-                shortcut={{ modifiers: ["cmd", "shift"], key: "arrowLeft" }}
+                shortcut={SHORTCUTS.moveLeft}
               />
               <Action
                 title="Move Right"
                 onAction={moveRight}
-                shortcut={{ modifiers: ["cmd", "shift"], key: "arrowRight" }}
+                shortcut={SHORTCUTS.moveRight}
               />
               <Action
                 title="Reset View"
                 onAction={resetView}
-                shortcut={{ modifiers: ["cmd", "shift"], key: "." }}
+                shortcut={SHORTCUTS.resetView}
               />
             </ActionPanel.Section>
             <ActionPanel.Section title="Share">
@@ -147,19 +199,13 @@ const Graph: React.FC<GraphProps> = ({ expression }) => {
                   <Action
                     title="Paste Image"
                     icon={Icon.Clipboard}
-                    shortcut={{
-                      macOS: { modifiers: ["cmd", "shift"], key: "v" },
-                      Windows: { modifiers: ["ctrl", "shift"], key: "v" },
-                    }}
+                    shortcut={SHORTCUTS.pasteImage}
                     onAction={() => shareImage("paste")}
                   />
                   <Action
                     title="Save Image to Downloads"
                     icon={Icon.Download}
-                    shortcut={{
-                      macOS: { modifiers: ["cmd", "shift"], key: "s" },
-                      Windows: { modifiers: ["ctrl", "shift"], key: "s" },
-                    }}
+                    shortcut={SHORTCUTS.saveImage}
                     onAction={() => shareImage("save")}
                   />
                 </>
@@ -175,15 +221,12 @@ const Graph: React.FC<GraphProps> = ({ expression }) => {
                 title="Next Theme"
                 icon={Icon.Brush}
                 onAction={cycleTheme}
-                shortcut={{ modifiers: ["cmd", "shift"], key: ";" }}
+                shortcut={SHORTCUTS.nextTheme}
               />
               <ActionPanel.Submenu
                 title="Switch Theme"
                 icon={Icon.Brush}
-                shortcut={{
-                  macOS: { modifiers: ["cmd"], key: "t" },
-                  Windows: { modifiers: ["ctrl"], key: "t" },
-                }}
+                shortcut={SHORTCUTS.switchTheme}
               >
                 {THEME_INFO.map((t) => (
                   <Action

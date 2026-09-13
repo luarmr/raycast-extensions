@@ -30,31 +30,27 @@ A simple Raycast graphing calculator extension.
 
 ## Actions
 
-- **Zoom In/Out**
-  - Use actions or keyboard shortcuts to zoom into or out of the graph.
-  - **Shortcuts**:
-    - Zoom In: `Cmd` + `+`
-    - Zoom Out: `Cmd` + `-`
+| Action | macOS | Windows |
+| --- | --- | --- |
+| Zoom In | `↵` | `↵` |
+| Zoom Out | `⌘` `↵` | `Ctrl` `↵` |
+| Move Up / Down / Left / Right | `⌘` `⇧` `↑` `↓` `←` `→` | `Ctrl` `Alt` `↑` `↓` `←` `→` |
+| Reset View | `⌘` `⇧` `.` | `Ctrl` `Shift` `R` |
+| Switch Theme | `⌘` `T` | `Ctrl` `T` |
+| Next Theme | `⌘` `⇧` `;` | `Ctrl` `Shift` `T` |
+| Copy Image | `⌘` `⇧` `C` | macOS only |
+| Paste Image | `⌘` `⇧` `V` | macOS only |
+| Save Image to Downloads | `⌘` `⇧` `S` | macOS only |
+| Copy SVG | – | – |
+| Edit Expression (history list) | `⌘` `E` | `Ctrl` `E` |
 
-- **Pan Left/Right/Up/Down**
-  - Navigate across the graph using actions or keyboard shortcuts.
-  - **Shortcuts**:
-    - Pan Left: `Cmd` + `Shift` + `←`
-    - Pan Right: `Cmd` + `Shift` + `→`
-    - Pan Up: `Cmd` + `Shift` + `↑`
-    - Pan Down: `Cmd` + `Shift` + `↓`
+Windows uses different keys for panning, Reset View and Next Theme because Raycast for Windows reserves `Ctrl` `Shift` + arrows, and punctuation keys vary with the keyboard layout.
 
-- **Reset View**
-  - Reset the graph to its initial view settings.
-  - **Shortcut**: `Cmd` + `Shift` + `.`
-
-- **Themes**
-  - Pick a theme from the `Switch Theme` submenu, or cycle with `Next Theme`.
-  - **Shortcuts**: Switch Theme `Cmd` + `T`, Next Theme `Cmd` + `Shift` + `;`
-
-- **Share**
-  - Copy, paste or save the current graph as a high-resolution PNG (macOS), or copy it as SVG (macOS and Windows).
-  - **Shortcuts**: Copy Image `Cmd` + `Shift` + `C`, Paste Image `Cmd` + `Shift` + `V`, Save Image to Downloads `Cmd` + `Shift` + `S`
+- **Zoom In/Out**: explore details or view the overall graph.
+- **Move**: pan to a different region of the graph.
+- **Reset View**: return to the default range.
+- **Themes**: pick a theme from the `Switch Theme` submenu, or cycle with `Next Theme`.
+- **Share**: copy, paste or save the current graph as a high-resolution PNG (macOS), or copy it as SVG (macOS and Windows).
 
 
 ## Preferences
