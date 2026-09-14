@@ -43,6 +43,7 @@ A simple Raycast graphing calculator extension.
 | Save Image to Downloads | `⌘` `⇧` `S` | macOS only |
 | Copy SVG | – | – |
 | Edit Expression (history list) | `⌘` `E` | `Ctrl` `E` |
+| Delete from History (history list) | `⌃` `X` | `Ctrl` `D` |
 
 Windows uses different keys for panning, Reset View and Next Theme because Raycast for Windows reserves `Ctrl` `Shift` + arrows, and punctuation keys vary with the keyboard layout.
 
