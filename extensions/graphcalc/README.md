@@ -66,13 +66,6 @@ How many points are sampled along the x-axis for each plot. Options: **Standard*
 
 **Why Standard is the default.** The graph is 800 units wide and the plot area about 700, so 1,000 samples already exceed what can be displayed: more points cannot make a normal curve look better on screen, they only help in the extreme zoom-out cases above. Making everyone pay the extra redraw cost for a case most people never hit would be a poor trade, so the default stays at the level that is visually lossless for ordinary use.
 
-## Screenshots
-
-![Screenshot1](./metadata/graphcalc-1.png)
-![Screenshot2](./metadata/graphcalc-2.png)
-![Screenshot3](./metadata/graphcalc-3.png)
-
-
 ## Tech Stack
 
 **Client:** TypeScript, Raycast API
